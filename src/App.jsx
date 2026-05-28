@@ -6,6 +6,7 @@ import AdminStation from './pages/AdminStation';
 import Leaderboard from './pages/Leaderboard';
 import MasterAdmin from './pages/MasterAdmin';
 import Reveal from './pages/Reveal';
+import HowToPlay from './pages/HowToPlay';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/leaderboard" element={<div className="container container-large"><Leaderboard /></div>} />
         <Route path="/master" element={<div className="container container-large"><MasterAdmin /></div>} />
         <Route path="/reveal" element={<Reveal />} />
+        <Route path="/how-to-play" element={<div className="container"><HowToPlay /></div>} />
       </Routes>
     </BrowserRouter>
   );

@@ -249,6 +249,18 @@ export default function Login() {
         </button>
       </form>
 
+      {/* ── How to play link for students before login ────────────────────── */}
+      <div style={{ marginTop: '1.5rem', textAlign: 'center', borderTop: '2.5px dotted #e2e8f0', paddingTop: '1.2rem' }}>
+        <button
+          type="button"
+          onClick={() => navigate('/how-to-play')}
+          className="btn btn-secondary"
+          style={{ width: '100%', padding: '0.8rem', borderRadius: '14px', border: '2px solid #000', boxShadow: '3px 3px 0 #000', background: '#fff', fontWeight: 800 }}
+        >
+          📖 วิธีการเล่นและกติกาค่าย (น้องค่าย)
+        </button>
+      </div>
+
       <style>{`
         @keyframes popCard {
           from { opacity: 0; transform: scale(0.85); }
