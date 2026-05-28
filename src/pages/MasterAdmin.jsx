@@ -194,28 +194,23 @@ export default function MasterAdmin() {
               boxShadow: '2px 2px 0px #000', transition: 'all 0.1s'
             }}
           >
-            <PartyPopper size={13} /> ประกาศผลรางวัล 🚀
+            <PartyPopper size={13} /> ประกาศผลรางวัล
           </button>
         </div>
       </div>
 
-      {/* ── Crown + Title ──────────────────────────────────────────────────── */}
       <div className="text-center" style={{ marginBottom: '1rem' }}>
-        <div style={{ fontSize: '2.2rem', lineHeight: 1, marginBottom: '0.1rem', filter: 'drop-shadow(2px 2px 0px rgba(0,0,0,0.1))' }}>
-          {hideScores ? '🔒' : '👑'}
-        </div>
         <h1 style={{
-          fontFamily: "'Kanit', sans-serif", fontWeight: 900, fontSize: '2.2rem',
-          color: '#1e293b', letterSpacing: '1px', margin: 0, lineHeight: '1.1',
-          textShadow: '-1.5px -1.5px 0 #fff, 1.5px -1.5px 0 #fff, -1.5px 1.5px 0 #fff, 1.5px 1.5px 0 #fff, 3px 3px 0px #1e293b',
+          fontFamily: "'Kanit', sans-serif", fontWeight: 900, fontSize: '2rem',
+          color: '#1e293b', letterSpacing: '2px', margin: 0, lineHeight: '1.1',
           textTransform: 'uppercase'
         }}>
           LEADERBOARD
         </h1>
-        <p style={{ fontFamily: "'Kanit', sans-serif", color: '#64748b', fontWeight: 700, fontSize: '0.9rem', margin: '0.2rem 0 0' }}>
+        <p style={{ fontFamily: "'Kanit', sans-serif", color: '#64748b', fontWeight: 600, fontSize: '0.82rem', margin: '0.3rem 0 0' }}>
           {hideScores
-            ? `📸 บันทึกล่าสุดก่อนปิด: ${frozenTime} น. — คะแนนถูกซ่อนจากน้องๆ แล้ว`
-            : 'สรุปตารางอันดับสะสมลูกอมประจำค่าย... (อัปเดตเรียลไทม์)'}
+            ? `บันทึกล่าสุดก่อนปิด: ${frozenTime} น. — คะแนนถูกซ่อนอยู่`
+            : 'อัปเดตแบบเรียลไทม์'}
         </p>
       </div>
 

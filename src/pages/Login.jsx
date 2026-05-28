@@ -118,17 +118,13 @@ export default function Login() {
                         padding: '0.75rem 0.5rem',
                         borderRadius: '14px',
                         border: selected ? '2.5px solid var(--accent-pink)' : '2px solid #e2e8f0',
-                        background: selected
-                          ? 'linear-gradient(135deg, var(--accent-pink) 0%, #f97316 100%)'
-                          : '#ffffff',
+                        background: selected ? 'var(--accent-pink)' : '#ffffff',
                         color: selected ? '#fff' : 'var(--text-main)',
                         fontWeight: 900,
                         fontSize: '0.95rem',
                         fontFamily: "'Kanit', sans-serif",
                         cursor: 'pointer',
-                        boxShadow: selected
-                          ? '0 0 14px rgba(255,46,147,0.45), 3px 3px 0px var(--accent-pink)'
-                          : '2px 2px 0px #e2e8f0',
+                        boxShadow: selected ? '3px 3px 0px var(--accent-pink)' : 'none',
                         transform: selected ? 'scale(1.04)' : 'scale(1)',
                         transition: 'all 0.15s cubic-bezier(0.22,1,0.36,1)',
                         animation: `popCard 0.3s cubic-bezier(0.22,1,0.36,1) both`,
@@ -186,17 +182,13 @@ export default function Login() {
                           padding: '0.7rem 1rem',
                           borderRadius: '12px',
                           border: selected ? '2.5px solid var(--accent-pink)' : '2px solid #e2e8f0',
-                          background: selected
-                            ? 'linear-gradient(135deg, var(--accent-pink) 0%, #f97316 100%)'
-                            : '#ffffff',
+                          background: selected ? 'var(--accent-pink)' : '#ffffff',
                           color: selected ? '#fff' : 'var(--text-main)',
                           fontWeight: 800,
                           fontSize: '0.9rem',
                           fontFamily: "'Kanit', sans-serif",
                           cursor: 'pointer',
-                          boxShadow: selected
-                            ? '0 0 12px rgba(255,46,147,0.4), 3px 3px 0px var(--accent-pink)'
-                            : '2px 2px 0px #e2e8f0',
+                          boxShadow: selected ? '3px 3px 0px var(--accent-pink)' : 'none',
                           transform: selected ? 'translateX(4px)' : 'translateX(0)',
                           transition: 'all 0.15s cubic-bezier(0.22,1,0.36,1)',
                           animation: `slideInCard 0.35s cubic-bezier(0.22,1,0.36,1) both`,

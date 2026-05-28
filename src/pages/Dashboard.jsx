@@ -94,8 +94,8 @@ export default function Dashboard() {
       </div>
 
       {/* ── Candy score card ─────────────────────────────────────────────────── */}
-      <div className="glass-card highlighted-card" style={{ padding: '1.8rem 1rem', borderColor: 'var(--accent-pink)', textAlign: 'center', marginBottom: '1.5rem' }}>
-        <p style={{ color: 'var(--accent-pink)', fontSize: '0.85rem', fontWeight: 800, letterSpacing: '1px', marginBottom: '0.4rem', textTransform: 'uppercase' }}>🍭 ลูกอมคงเหลือ</p>
+      <div style={{ padding: '1.8rem 1rem', border: '1.5px solid var(--accent-pink)', borderRadius: '16px', background: '#fff', textAlign: 'center', marginBottom: '1.5rem' }}>
+        <p style={{ color: '#64748b', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.5px', marginBottom: '0.4rem', textTransform: 'uppercase' }}>ลูกอมคงเหลือ</p>
         <h1 style={{ fontSize: '4rem', fontWeight: 900, color: 'var(--text-main)', lineHeight: 1, minHeight: '68px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Kanit', sans-serif" }}>
           {hideScores === null ? (
             <span style={{ fontSize: '2rem', color: 'var(--text-sub)' }}>...</span>
@@ -134,20 +134,18 @@ export default function Dashboard() {
               onMouseLeave={() => setHoveredId(null)}
               style={{
                 background: '#ffffff',
-                border: `2.5px solid ${cfg.border}`,
+                border: isHovered ? `1.5px solid ${cfg.border}` : '1.5px solid #e2e8f0',
                 borderRadius: '16px',
                 padding: '0',
                 cursor: 'pointer',
                 overflow: 'hidden',
-                boxShadow: isHovered ? `${cfg.glow}, 4px 4px 0px ${cfg.border}` : `2px 2px 0px ${cfg.border}`,
+                boxShadow: isHovered ? '0 4px 12px rgba(0,0,0,0.10)' : '0 1px 4px rgba(0,0,0,0.06)',
                 transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
                 transition: 'all 0.18s cubic-bezier(0.22,1,0.36,1)',
                 animation: `slideInCard 0.4s cubic-bezier(0.22,1,0.36,1) both`,
                 animationDelay: `${idx * 0.05}s`,
               }}
             >
-              {/* Coloured top accent bar */}
-              <div style={{ height: '5px', background: cfg.gradient }} />
 
               <div style={{ padding: '0.85rem 1rem', display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
                 {/* Icon circle */}
@@ -186,16 +184,16 @@ export default function Dashboard() {
                       <span style={{ background: cfg.badgeBg, color: cfg.badgeColor, fontSize: '0.7rem', fontWeight: 800, padding: '0.25rem 0.6rem', borderRadius: '999px', border: `1.5px solid ${cfg.border}`, whiteSpace: 'nowrap' }}>
                         เสี่ยงดวง
                       </span>
-                      <p style={{ fontSize: '0.7rem', color: 'var(--text-sub)', margin: '0.2rem 0 0', fontWeight: 700 }}>จ่าย {st.cost} 🍬</p>
+                      <p style={{ fontSize: '0.7rem', color: 'var(--text-sub)', margin: '0.2rem 0 0', fontWeight: 700 }}>จ่าย {st.cost} ลูกอม</p>
                     </div>
                   ) : (
                     <div style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '0.3rem', justifyContent: 'flex-end' }}>
                         <span style={{ background: '#fef9c3', color: '#92400e', fontSize: '0.68rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '999px', border: '1.5px solid #f59e0b', whiteSpace: 'nowrap' }}>
-                          -{st.cost} 🍬
+                           -{st.cost}
                         </span>
                         <span style={{ background: '#dcfce7', color: '#166534', fontSize: '0.68rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '999px', border: '1.5px solid #22c55e', whiteSpace: 'nowrap' }}>
-                          +{st.reward} 🍬
+                           +{st.reward}
                         </span>
                       </div>
                     </div>
