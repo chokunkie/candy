@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake } from 'lucide-react';
+import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen } from 'lucide-react';
 
 export default function MasterAdmin() {
   const [teams, setTeams] = useState([]);           // live teams (realtime)
@@ -186,6 +186,17 @@ export default function MasterAdmin() {
           )}
         </div>
         <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+          <button
+            onClick={() => navigate('/how-to-play')}
+            style={{
+              background: '#475569', color: '#fff',
+              border: '1.5px solid #000', padding: '0.3rem 0.7rem', borderRadius: '8px',
+              fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '0.3rem', transition: 'all 0.1s'
+            }}
+          >
+            <BookOpen size={13} /> วิธีการเล่น
+          </button>
           <button
             onClick={toggleHideScore}
             style={{
