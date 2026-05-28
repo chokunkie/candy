@@ -414,7 +414,7 @@ export default function MasterAdmin() {
               จัดการคะแนน: {selectedTeam.name}
             </h3>
             <p style={{ marginBottom: '1.2rem', color: '#64748b', fontWeight: 600, fontSize: '0.9rem' }}>
-              คะแนนปัจจุบัน: <b style={{ color: '#ff2e93', fontSize: '1.1rem' }}>{selectedTeam.points} ลูกอม</b>
+              คะแนนปัจจุบัน: <b style={{ color: '#ff2e93', fontSize: '1.1rem' }}>{hideScores ? '🔒 ถูกซ่อนอยู่' : `${selectedTeam.points} ลูกอม`}</b>
             </p>
             <div className="form-group">
               <label className="form-label" style={{ fontFamily: "'Kanit', sans-serif", fontWeight: 800 }}>
