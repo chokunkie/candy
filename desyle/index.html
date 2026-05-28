@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Lottery Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Mitr:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="header full-width">
+            <h1 class="title">CAMP LOTTERY</h1>
+            <p class="subtitle">ระบบสุ่มรางวัลและจัดการโพย - 15 นาทีพารวย!</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Timer & Lottery -->
+            <div class="left-panel">
+                <div class="doodle-card timer-card">
+                    <h2>ลูปเวลา 15 นาที</h2>
+                    <div class="timer-display" id="timer-display">15:00</div>
+                    <div class="timer-controls">
+                        <button id="btn-timer-start" class="btn-action">เริ่ม/พัก</button>
+                        <button id="btn-timer-reset" class="btn-action btn-danger">รีเซ็ต</button>
+                    </div>
+                </div>
+
+                <div class="doodle-card lottery-card">
+                    <h2>ตู้สุ่มรางวัล</h2>
+                    <div class="slot-machine">
+                        <div class="slot" id="slot-1">
+                            <div class="numbers">0<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>0</div>
+                        </div>
+                        <div class="slot" id="slot-2">
+                            <div class="numbers">0<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>0</div>
+                        </div>
+                        <div class="slot" id="slot-3">
+                            <div class="numbers">0<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>0</div>
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <button id="spin-btn" class="btn-spin">สุ่มรางวัล!</button>
+                    </div>
+
+                    <div id="result-display" class="result-display hidden">
+                        <div class="winning-number" id="winning-number">---</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Tickets & Results -->
+            <div class="right-panel">
+                <div class="doodle-card tickets-card">
+                    <h2>บันทึกโพยหวย (1 ลูกอม/สิทธิ์)</h2>
+                    <div class="ticket-input-group">
+                        <select id="group-select" class="doodle-input">
+                            <option value="">กลุ่ม...</option>
+                            <option value="1">กลุ่ม 1</option>
+                            <option value="2">กลุ่ม 2</option>
+                            <option value="3">กลุ่ม 3</option>
+                            <option value="4">กลุ่ม 4</option>
+                            <option value="5">กลุ่ม 5</option>
+                            <option value="6">กลุ่ม 6</option>
+                            <option value="7">กลุ่ม 7</option>
+                            <option value="8">กลุ่ม 8</option>
+                            <option value="9">กลุ่ม 9</option>
+                            <option value="10">กลุ่ม 10</option>
+                        </select>
+                        <input type="text" id="ticket-input" class="doodle-input" maxlength="3" placeholder="เลข 3 ตัว">
+                        <button id="btn-add-ticket" class="btn-action">บันทึก</button>
+                    </div>
+                    
+                    <div class="ticket-list-container">
+                        <div class="ticket-list-header">
+                            <h3>โพยที่รับแทงแล้ว (<span id="ticket-count">0</span>)</h3>
+                            <button id="btn-reset-tickets" class="btn-action btn-danger btn-small">ล้างโพย</button>
+                        </div>
+                        <div id="ticket-list" class="ticket-list">
+                            <p class="empty-msg">ยังไม่มีการแทงหวยในรอบนี้</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="winners-card" class="doodle-card winners-card hidden">
+                    <h2>สรุปผลการจ่ายรางวัล</h2>
+                    <div id="winners-list" class="winners-list">
+                        <!-- Winners will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

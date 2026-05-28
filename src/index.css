@@ -1,0 +1,384 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Kanit:wght@300;400;600;700;800;900&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+:root {
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --card-border: #1e293b;
+  
+  --accent-pink: #ff2e93;
+  --accent-pink-light: #ffe4f0;
+  --accent-purple: #9d4edd;
+  --accent-blue: #00d2ff;
+  --accent-blue-light: #e0f8ff;
+  --accent-green: #10b981;
+  --accent-green-light: #d1fae5;
+  --accent-amber: #f59e0b;
+  --accent-amber-light: #fef3c7;
+  
+  --text-main: #1e293b;
+  --text-sub: #64748b;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Kanit', 'Prompt', 'Outfit', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Background Soft Blobs for subtle visual interest */
+body::before {
+  content: ''; position: fixed;
+  top: -10%; left: -10%; width: 400px; height: 400px;
+  background: var(--accent-pink-light); border-radius: 50%;
+  filter: blur(80px); z-index: -1; opacity: 0.8;
+}
+
+.container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.desktop-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Doodle Art Cards styling */
+.glass-card {
+  background: var(--card-bg);
+  border: 3px solid var(--text-main);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 6px 6px 0px var(--text-main);
+  margin-bottom: 1.5rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.glass-card:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 7px 7px 0px var(--text-main);
+}
+
+.glass-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0px var(--text-main);
+}
+
+/* Highlighted Cards (keeps custom borders, uses doodle shadows) */
+.highlighted-card {
+  border-width: 3px !important;
+  border-style: solid !important;
+  box-shadow: 6px 6px 0px var(--text-main) !important;
+}
+
+.highlighted-card:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 7px 7px 0px var(--text-main) !important;
+}
+
+.highlighted-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0px var(--text-main) !important;
+}
+
+/* Typography with solid doodle shadow outline */
+.title-main {
+  font-family: 'Kanit', 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 2.5rem;
+  color: var(--accent-pink);
+  text-shadow: 
+      -2px -2px 0 var(--text-main),  
+       2px -2px 0 var(--text-main),
+      -2px  2px 0 var(--text-main),
+       2px  2px 0 var(--text-main),
+       4px  4px 0 var(--text-main);
+  text-align: center;
+  margin-bottom: 0.2rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.title-sub { 
+  text-align: center; 
+  color: var(--text-main); 
+  margin-bottom: 2rem; 
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* Forms */
+.form-group { 
+  margin-bottom: 1.2rem; 
+}
+
+.form-label { 
+  display: block; 
+  color: var(--text-main); 
+  font-size: 0.85rem; 
+  margin-bottom: 0.5rem; 
+  text-transform: uppercase; 
+  font-weight: 800; 
+  letter-spacing: 0.5px; 
+}
+
+.form-control {
+  width: 100%; 
+  background: #ffffff;
+  border: 3px solid var(--text-main); 
+  border-radius: 12px;
+  padding: 1rem 1.2rem; 
+  color: var(--text-main); 
+  font-size: 1.05rem;
+  transition: all 0.2s; 
+  font-weight: 600;
+}
+
+.form-control:focus { 
+  border-color: var(--text-main); 
+  outline: none; 
+  background: var(--accent-pink-light); 
+}
+
+/* Playful Doodle Buttons */
+.btn {
+  width: 100%; 
+  background: var(--accent-pink);
+  color: #ffffff; 
+  border: 3px solid var(--text-main); 
+  border-radius: 12px;
+  padding: 1rem; 
+  font-size: 1.1rem; 
+  font-weight: 700;
+  cursor: pointer; 
+  transition: all 0.1s ease; 
+  box-shadow: 4px 4px 0px var(--text-main);
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 0.5rem;
+}
+
+.btn:hover { 
+  transform: translate(-1px, -1px); 
+  box-shadow: 5px 5px 0px var(--text-main); 
+}
+
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px var(--text-main);
+}
+
+.btn:disabled { 
+  opacity: 0.6; 
+  cursor: not-allowed; 
+  transform: none !important; 
+  box-shadow: 4px 4px 0px var(--text-main) !important; 
+}
+
+.btn-secondary { 
+  background: #ffffff; 
+  color: var(--text-main); 
+  box-shadow: 4px 4px 0px var(--text-main); 
+  border: 3px solid var(--text-main); 
+  font-weight: 700; 
+}
+
+.btn-secondary:hover { 
+  background: #f1f5f9; 
+}
+
+/* Support Colors for Doodle Buttons */
+.btn-success {
+  background-color: var(--accent-green) !important;
+  color: #ffffff !important;
+}
+.btn-danger {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+}
+.btn-amber {
+  background-color: var(--accent-amber) !important;
+  color: var(--text-main) !important;
+}
+.btn-blue {
+  background-color: var(--accent-blue) !important;
+  color: var(--text-main) !important;
+}
+.btn-purple {
+  background-color: var(--accent-purple) !important;
+  color: #ffffff !important;
+}
+
+/* Process Styles (Steps) with Doodle outlines */
+.process-step { 
+  display: flex; 
+  align-items: center; 
+  gap: 1rem; 
+  margin-bottom: 1rem; 
+  padding: 1rem; 
+  background: #ffffff; 
+  border-radius: 12px; 
+  border: 3px solid var(--text-main); 
+  border-left-width: 6px;
+  border-left-color: var(--accent-pink); 
+}
+
+.step-number { 
+  width: 32px; 
+  height: 32px; 
+  border-radius: 50%; 
+  background: var(--accent-pink); 
+  border: 2px solid var(--text-main);
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-weight: 800; 
+  color: white; 
+  flex-shrink: 0; 
+}
+
+.step-text { 
+  font-size: 0.95rem; 
+  font-weight: 600; 
+  flex: 1; 
+  color: var(--text-main); 
+}
+
+/* Doodle Badges */
+.badge { 
+  padding: 0.3rem 0.6rem; 
+  border: 2px solid var(--text-main);
+  border-radius: 8px; 
+  font-size: 0.8rem; 
+  font-weight: 800; 
+  box-shadow: 2px 2px 0px var(--text-main);
+  display: inline-block;
+}
+
+.badge-gray { background: #ffffff; color: var(--text-main); }
+.badge-amber { background: var(--accent-amber-light); color: var(--text-main); }
+.badge-green { background: var(--accent-green-light); color: var(--text-main); }
+.badge-blue { background: var(--accent-blue-light); color: var(--text-main); }
+.badge-purple { background: #f3e8ff; color: var(--text-main); }
+
+/* Doodle Inner Card */
+.doodle-card-inner {
+  background: #f3e8ff;
+  border: 3px solid var(--text-main);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+/* Leaderboard Row Styles */
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 3px solid var(--text-main);
+  background-color: transparent;
+  transition: background-color 0.2s;
+}
+
+.leaderboard-row:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-row-first {
+  background-color: var(--accent-amber-light) !important;
+}
+
+/* Utilities */
+.text-center { text-align: center; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-4 { margin-top: 2rem; }
+
+.error-msg { color: #ef4444; font-size: 0.9rem; text-align: center; margin-top: 0.5rem; font-weight: 700; }
+.success-msg { color: #047857; font-size: 0.9rem; text-align: center; margin-top: 0.5rem; font-weight: 700; background: var(--accent-green-light); padding: 0.8rem; border-radius: 8px; border: 2px solid var(--text-main); }
+
+/* PC Responsive layout system */
+.container-large {
+  max-width: 1200px !important;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .admin-grid {
+    grid-template-columns: 320px 1fr;
+  }
+}
+
+.master-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 992px) {
+  .master-grid {
+    grid-template-columns: 380px 1fr;
+  }
+}
+
+
+/* Cinematic starry animations for Reveal Page */
+@keyframes floatStar {
+  0% { 
+    transform: translateY(0) scale(1) rotate(0deg); 
+    opacity: 1; 
+  }
+  50% { 
+    opacity: 0.8; 
+  }
+  100% { 
+    transform: translateY(-250px) scale(1.4) rotate(360deg); 
+    opacity: 0; 
+  }
+}
+
+.reveal-star {
+  position: absolute;
+  pointer-events: none;
+  font-size: 2rem;
+  z-index: 50;
+  animation: floatStar 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes pulseRing {
+  0% { transform: scale(0.96); opacity: 0.6; }
+  50% { transform: scale(1.04); opacity: 0.9; }
+  100% { transform: scale(0.96); opacity: 0.6; }
+}
+
+.pulse-ring-gold {
+  border-color: var(--accent-amber) !important;
+  animation: pulseRing 2.5s infinite ease-in-out;
+}
+
