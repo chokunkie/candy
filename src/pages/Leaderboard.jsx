@@ -13,13 +13,26 @@ export default function Leaderboard() {
     // Realtime subscription for points
     const teamsSub = supabase
       .channel('public:teams')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'teams' }, () => {
-        fetchData();
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'teams' }, (payload) => {
+        const updatedTeam = payload.new;
+        setTeams(prevTeams => {
+          const newTeams = prevTeams.map(t => t.id === updatedTeam.id ? updatedTeam : t);
+          return [...newTeams].sort((a, b) => b.points - a.points);
+        });
+      })
+      .subscribe();
+
+    // Realtime subscription for settings (visibility)
+    const settingsSub = supabase
+      .channel('public:settings')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'settings', filter: 'id=eq.1' }, (payload) => {
+        setHideScores(payload.new.hide_scores);
       })
       .subscribe();
       
     return () => {
       supabase.removeChannel(teamsSub);
+      supabase.removeChannel(settingsSub);
     }
   }, []);
 

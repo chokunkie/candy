@@ -120,7 +120,7 @@ export default function StationDetail() {
       setTeam(updatedTeam);
       
       const timeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      setMessage(`🎟️ ซื้อล็อตเตอรี่สำเร็จเวลา ${timeStr}! โปรดรอฟังประกาศผลตอนจบค่ายนะครับ (รอลุ้น x5)`);
+      setMessage(`🎟️ ซื้อล็อตเตอรี่สำเร็จเวลา ${timeStr}! โปรดรอฟังผลตามเวลาที่กำหนดนะครับ`);
     } catch (err) {
       setMessage('เกิดข้อผิดพลาด: ' + err.message);
     } finally {

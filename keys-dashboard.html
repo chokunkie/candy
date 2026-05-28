@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CANDY CAMP - Credentials Dashboard</title>
+  <!-- Google Fonts: Outfit & Kanit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800;900&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --panel-bg: rgba(17, 24, 39, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --glow-pink: 0 0 20px rgba(255, 46, 147, 0.25);
+      --glow-blue: 0 0 20px rgba(0, 210, 255, 0.25);
+      
+      --accent-pink: #ff2e93;
+      --accent-blue: #00d2ff;
+      --accent-purple: #9d4edd;
+      --accent-gold: #ffbe0b;
+      --accent-green: #10b981;
+      
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(255, 46, 147, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(0, 210, 255, 0.08) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(157, 78, 221, 0.05) 0px, transparent 50%);
+      font-family: 'Kanit', 'Outfit', sans-serif;
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Header Styling */
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    .logo-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent-pink) 0%, var(--accent-purple) 100%);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 900;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 0.8rem;
+      box-shadow: var(--glow-pink);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, #ffffff 10%, #cbd5e1 50%, var(--accent-blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      color: var(--text-sub);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* Section Styling */
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.5rem;
+    }
+
+    .title-pink { color: var(--accent-pink); text-shadow: 0 0 10px rgba(255, 46, 147, 0.2); }
+    .title-blue { color: var(--accent-blue); text-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 3.5rem;
+    }
+
+    /* Glass Card Styling */
+    .card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 1.2rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: transparent;
+      transition: all 0.25s ease;
+    }
+
+    .card-pink::before { background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple)); }
+    .card-blue::before { background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-pink:hover { box-shadow: var(--glow-pink); }
+    .card-blue:hover { box-shadow: var(--glow-blue); }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.8rem;
+    }
+
+    .id-tag {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--text-sub);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .name-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+
+    .staff-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-sub);
+      font-weight: 600;
+    }
+
+    .info-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 0.8rem;
+      border-top: 1px dashed rgba(255, 255, 255, 0.05);
+    }
+
+    .info-left {
+      font-size: 0.72rem;
+      color: var(--text-sub);
+      font-weight: 600;
+    }
+
+    /* Key Displays */
+    .key-display {
+      font-family: 'Outfit', monospace;
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      line-height: 1;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .key-pink {
+      color: var(--accent-pink);
+      text-shadow: 0 0 10px rgba(255, 46, 147, 0.3);
+    }
+    
+    .key-blue {
+      color: var(--accent-blue);
+      text-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+    }
+
+    /* Watermark / Footer */
+    footer {
+      text-align: center;
+      margin-top: auto;
+      padding-top: 2rem;
+      color: var(--text-sub);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      opacity: 0.7;
+    }
+
+    /* Animation Definitions */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo-badge">🛡️ Admin Dashboard</div>
+      <h1>Candy Camp Credentials</h1>
+      <div class="subtitle">ตารางสรุปรหัสผ่านสำหรับผู้ดูแลระบบ (แคปภาพส่งต่อความปลอดภัย)</div>
+    </header>
+
+    <!-- STATIONS (พี่ๆ สต๊าฟประจำฐาน) -->
+    <h2 class="section-title title-pink">🔑 ฐานกิจกรรม พี่ๆ สต๊าฟ (Station Secret Keys)</h2>
+    <div class="grid">
+      
+      <!-- ST01 -->
+      <div class="card card-pink">
+        <div class="card-header">
+          <div>
+            <h3 class="name-title">ฐาน 1 : TARGET 24</h3>
+            <p class="staff-subtitle">พี่อุ๋ม, พี่ปังปอน</p>
+          </div>
+          <span class="id-tag">ST01</span>
+        </div>
+        <div class="key-display key-pink">9385</div>
+        <div class="info-footer">
+          <span class="info-left">ค่าเล่น: 2 | รางวัล: 5</span>
+        </div>
+      </div>
+
+      <!-- ST02 -->
+      <div class="card card-pink">
+        <div class="card-header">
+          <div>
+            <h3 class="name-title">ฐาน 2 : SYSTEM SYNC</h3>
+            <p class="staff-subtitle">พี่ชมพู, พัดชา, หลิน, เนตร</p>
+          </div>
+          <span class="id-tag">ST02</span>
+        </div>
+        <div class="key-display key-pink">2749</div>
+        <div class="info-footer">
+          <span class="info-left">ค่าเล่น: 5 | รางวัล: 15</span>
+        </div>
+      </div>
+
+      <!-- ST03 -->
+      <div class="card card-pink">
+        <div class="card-header">
+          <div>
+            <h3 class="name-title">ฐาน 3 : DATA LEAK</h3>
+            <p class="staff-subtitle">พี่ปืน, พี่นิว, พี่พลอย</p>
+          </div>
+          <span class="id-tag">ST03</span>
+        </div>
+        <div class="key-display key-pink">6183</div>
+        <div class="info-footer">
+          <span class="info-left">ค่าเล่น: 3 | รางวัล: 10</span>
+        </div>
+      </div>
+
+      <!-- ST04 -->
+      <div class="card card-pink">
+        <div class="card-header">
+          <div>
+            <h3 class="name-title">ฐาน 4 : รับจ๊อบกู้ชีพ</h3>
+            <p class="staff-subtitle">พี่พีช (ฐานผี)</p>
+          </div>
+          <span class="id-tag">ST04</span>
+        </div>
+        <div class="key-display key-pink">4827</div>
+        <div class="info-footer">
+          <span class="info-left">ค่าเล่น: 0 | รางวัล: 0</span>
+        </div>
+      </div>
+
+      <!-- ST05 -->
+      <div class="card card-pink">
+        <div class="card-header">
+          <div>
+            <h3 class="name-title">ฐาน 5 : หนังสือพิมพ์</h3>
+            <p class="staff-subtitle">พี่ซีมอล, พี่เมสส์ซมุก</p>
+          </div>
+          <span class="id-tag">ST05</span>
+        </div>
+        <div class="key-display key-pink">7501</div>
+        <div class="info-footer">
+          <span class="info-left">ค่าเล่น: 2 | รางวัล: 5</span>
+        </div>
+      </div>
+
+      <!-- ST06 -->
+      <div class="card card-pink">
+        <div class="card-header">
+          <div>
+            <h3 class="name-title">ฐาน 6 : ตีโป่งนุ่งไป</h3>
+            <p class="staff-subtitle">พี่แก้ม, พี่จ๋า</p>
+          </div>
+          <span class="id-tag">ST06</span>
+        </div>
+        <div class="key-display key-pink">3946</div>
+        <div class="info-footer">
+          <span class="info-left">ค่าเล่น: 2 | รางวัล: 6</span>
+        </div>
+      </div>
+
+      <!-- ST07 -->
+      <div class="card card-pink">
+        <div class="card-header">
+          <div>
+            <h3 class="name-title">ฐาน 7 : XO วิ่งไว</h3>
+            <p class="staff-subtitle">พี่อิงอร, พี่แก้ม</p>
+          </div>
+          <span class="id-tag">ST07</span>
+        </div>
+        <div class="key-display key-pink">8162</div>
+        <div class="info-footer">
+          <span class="info-left">ค่าเล่น: 2 | รางวัล: 6</span>
+        </div>
+      </div>
+
+      <!-- ST08 -->
+      <div class="card card-pink">
+        <div class="card-header">
+          <div>
+            <h3 class="name-title">ฐาน 8 : จะรอดหรือร่วง</h3>
+            <p class="staff-subtitle">พี่ยูง, หวาน, โบว์, จูมุก</p>
+          </div>
+          <span class="id-tag">ST08</span>
+        </div>
+        <div class="key-display key-pink">5093</div>
+        <div class="info-footer">
+          <span class="info-left">ค่าเล่น: 1 | รางวัล: 3</span>
+        </div>
+      </div>
+
+      <!-- ST09 -->
+      <div class="card card-pink">
+        <div class="card-header">
+          <div>
+            <h3 class="name-title">ฐาน 9 : ล็อตเตอร์รี่</h3>
+            <p class="staff-subtitle">พี่โชกุน, พี่มิ้น</p>
+          </div>
+          <span class="id-tag">ST09</span>
+        </div>
+        <div class="key-display key-pink">2674</div>
+        <div class="info-footer">
+          <span class="info-left">เสี่ยงโชค: 2 ลูกอม</span>
+        </div>
+      </div>
+
+      <!-- ST10 -->
+      <div class="card card-pink">
+        <div class="card-header">
+          <div>
+            <h3 class="name-title">ฐาน 10 : เด้งดึ้งดันลูก</h3>
+            <p class="staff-subtitle">พี่แพรว, พี่นิว</p>
+          </div>
+          <span class="id-tag">ST10</span>
+        </div>
+        <div class="key-display key-pink">8430</div>
+        <div class="info-footer">
+          <span class="info-left">ค่าเล่น: 2 | รางวัล: 5</span>
+        </div>
+      </div>
+
+      <!-- ST11 -->
+      <div class="card card-pink">
+        <div class="card-header">
+          <div>
+            <h3 class="name-title">ฐาน 11 : ส่งปิงปอง</h3>
+            <p class="staff-subtitle">พี่ปาล์ม, สายน้ำ, เบส</p>
+          </div>
+          <span class="id-tag">ST11</span>
+        </div>
+        <div class="key-display key-pink">1596</div>
+        <div class="info-footer">
+          <span class="info-left">ค่าเล่น: 5 | รางวัล: 15</span>
+        </div>
+      </div>
+
+      <!-- ST12 -->
+      <div class="card card-pink">
+        <div class="card-header">
+          <div>
+            <h3 class="name-title">ฐาน 12 : เก้าอี้สายฟ้า</h3>
+            <p class="staff-subtitle">พี่เปรี้ยว, น้ำอิง, เอิร์น</p>
+          </div>
+          <span class="id-tag">ST12</span>
+        </div>
+        <div class="key-display key-pink">7248</div>
+        <div class="info-footer">
+          <span class="info-left">ค่าเล่น: 2 | รางวัล: 10</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TEAMS (น้องๆ ในแต่ละกลุ่ม) -->
+    <h2 class="section-title title-blue">👤 กลุ่มน้องค่าย (Team Pins)</h2>
+    <div class="grid">
+      
+      <!-- TEAM 1 -->
+      <div class="card card-blue">
+        <div class="card-header">
+          <h3 class="name-title">กลุ่มที่ 1</h3>
+          <span class="id-tag">TEAM01</span>
+        </div>
+        <div class="key-display key-blue">5938</div>
+        <div class="info-footer"><span class="info-left">ลูกอมเริ่มต้น: 50</span></div>
+      </div>
+
+      <!-- TEAM 2 -->
+      <div class="card card-blue">
+        <div class="card-header">
+          <h3 class="name-title">กลุ่มที่ 2</h3>
+          <span class="id-tag">TEAM02</span>
+        </div>
+        <div class="key-display key-blue">8417</div>
+        <div class="info-footer"><span class="info-left">ลูกอมเริ่มต้น: 50</span></div>
+      </div>
+
+      <!-- TEAM 3 -->
+      <div class="card card-blue">
+        <div class="card-header">
+          <h3 class="name-title">กลุ่มที่ 3</h3>
+          <span class="id-tag">TEAM03</span>
+        </div>
+        <div class="key-display key-blue">2693</div>
+        <div class="info-footer"><span class="info-left">ลูกอมเริ่มต้น: 50</span></div>
+      </div>
+
+      <!-- TEAM 4 -->
+      <div class="card card-blue">
+        <div class="card-header">
+          <h3 class="name-title">กลุ่มที่ 4</h3>
+          <span class="id-tag">TEAM04</span>
+        </div>
+        <div class="key-display key-blue">7351</div>
+        <div class="info-footer"><span class="info-left">ลูกอมเริ่มต้น: 50</span></div>
+      </div>
+
+      <!-- TEAM 5 -->
+      <div class="card card-blue">
+        <div class="card-header">
+          <h3 class="name-title">กลุ่มที่ 5</h3>
+          <span class="id-tag">TEAM05</span>
+        </div>
+        <div class="key-display key-blue">4826</div>
+        <div class="info-footer"><span class="info-left">ลูกอมเริ่มต้น: 50</span></div>
+      </div>
+
+      <!-- TEAM 6 -->
+      <div class="card card-blue">
+        <div class="card-header">
+          <h3 class="name-title">กลุ่มที่ 6</h3>
+          <span class="id-tag">TEAM06</span>
+        </div>
+        <div class="key-display key-blue">9164</div>
+        <div class="info-footer"><span class="info-left">ลูกอมเริ่มต้น: 50</span></div>
+      </div>
+
+      <!-- TEAM 7 -->
+      <div class="card card-blue">
+        <div class="card-header">
+          <h3 class="name-title">กลุ่มที่ 7</h3>
+          <span class="id-tag">TEAM07</span>
+        </div>
+        <div class="key-display key-blue">3572</div>
+        <div class="info-footer"><span class="info-left">ลูกอมเริ่มต้น: 50</span></div>
+      </div>
+
+      <!-- TEAM 8 -->
+      <div class="card card-blue">
+        <div class="card-header">
+          <h3 class="name-title">กลุ่มที่ 8</h3>
+          <span class="id-tag">TEAM08</span>
+        </div>
+        <div class="key-display key-blue">6209</div>
+        <div class="info-footer"><span class="info-left">ลูกอมเริ่มต้น: 50</span></div>
+      </div>
+
+      <!-- TEAM 9 -->
+      <div class="card card-blue">
+        <div class="card-header">
+          <h3 class="name-title">กลุ่มที่ 9</h3>
+          <span class="id-tag">TEAM09</span>
+        </div>
+        <div class="key-display key-blue">1785</div>
+        <div class="info-footer"><span class="info-left">ลูกอมเริ่มต้น: 50</span></div>
+      </div>
+
+      <!-- TEAM 10 -->
+      <div class="card card-blue">
+        <div class="card-header">
+          <h3 class="name-title">กลุ่มที่ 10</h3>
+          <span class="id-tag">TEAM10</span>
+        </div>
+        <div class="key-display key-blue">4931</div>
+        <div class="info-footer"><span class="info-left">ลูกอมเริ่มต้น: 50</span></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <footer>
+    🛡️ CONFIDENTIAL - FOR ADMIN ONLY | CANDY CAMP V3 SYSTEM
+  </footer>
+
+</body>
+</html>

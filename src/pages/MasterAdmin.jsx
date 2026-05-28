@@ -25,8 +25,12 @@ export default function MasterAdmin() {
 
     const ch = supabase
       .channel('master:teams')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'teams' }, () => {
-        fetchTeams();
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'teams' }, (payload) => {
+        const updatedTeam = payload.new;
+        setTeams(prevTeams => {
+          const newTeams = prevTeams.map(t => t.id === updatedTeam.id ? updatedTeam : t);
+          return [...newTeams].sort((a, b) => b.points - a.points);
+        });
       })
       .subscribe();
 
@@ -115,7 +119,16 @@ export default function MasterAdmin() {
     const newPoints =
       type === 'add' ? selectedTeam.points + amount : selectedTeam.points - amount;
 
+    // 1. Update Database
     await supabase.from('teams').update({ points: newPoints }).eq('id', selectedTeam.id);
+
+    // 2. Update local states immediately (both live teams and frozen snapshot)
+    const updateArray = (prev) => {
+      const updated = prev.map(t => t.id === selectedTeam.id ? { ...t, points: newPoints } : t);
+      return hideScores ? updated : [...updated].sort((a, b) => b.points - a.points);
+    };
+    setTeams(updateArray);
+    setFrozenTeams(updateArray);
 
     setShowAdjust(false);
     setAdjustAmount('');
@@ -355,15 +368,26 @@ export default function MasterAdmin() {
                     </h2>
                   </div>
 
-                  {/* Score hidden indicator */}
-                  <div style={{
-                    background: '#f1f5f9', border: '2px dashed #cbd5e1',
-                    borderRadius: '8px', padding: '0.3rem 0.9rem',
-                    fontSize: '0.85rem', fontWeight: 800, color: '#94a3b8',
-                    fontFamily: "'Kanit', sans-serif",
-                    display: 'flex', alignItems: 'center', gap: '0.3rem'
-                  }}>
-                    <Lock size={13} /> ??? ลูกอม
+                  {/* Score hidden indicator + Edit button */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                    <div style={{
+                      background: '#f1f5f9', border: '2px dashed #cbd5e1',
+                      borderRadius: '8px', padding: '0.3rem 0.9rem',
+                      fontSize: '0.85rem', fontWeight: 800, color: '#94a3b8',
+                      fontFamily: "'Kanit', sans-serif",
+                      display: 'flex', alignItems: 'center', gap: '0.3rem'
+                    }}>
+                      <Lock size={13} /> ??? ลูกอม
+                    </div>
+                    
+                    <button
+                      onClick={() => { setSelectedTeam(t); setShowAdjust(true); }}
+                      style={{ background: 'none', border: 'none', padding: '0.3rem', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: '6px', color: '#94a3b8', transition: 'all 0.15s' }}
+                      onMouseEnter={e => e.currentTarget.style.color = '#ff2e93'}
+                      onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                    >
+                      <Settings size={16} />
+                    </button>
                   </div>
                 </div>
               ))}
