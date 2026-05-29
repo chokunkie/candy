@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { LogOut, Lock, ChevronRight, Sparkles, Zap, Ticket } from 'lucide-react';
+import { LogOut, Lock, ChevronRight, Sparkles, Zap, Ticket, GraduationCap } from 'lucide-react';
 
 // ─── Station type config ──────────────────────────────────────────────────────
 const TYPE_CONFIG = {
@@ -83,14 +83,30 @@ export default function Dashboard() {
           <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-sub)', margin: 0, letterSpacing: '0.5px' }}>กลุ่มของคุณ</p>
           <h2 style={{ fontSize: '1.3rem', fontWeight: 900, margin: 0, color: 'var(--text-main)', fontFamily: "'Kanit', sans-serif" }}>{team.name}</h2>
         </div>
-        <button
-          onClick={handleLogout}
-          style={{ background: '#fff0f5', border: '2px solid var(--accent-pink)', borderRadius: '50%', width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.15s' }}
-          onMouseEnter={e => e.currentTarget.style.background = '#ffe4ef'}
-          onMouseLeave={e => e.currentTarget.style.background = '#fff0f5'}
-        >
-          <LogOut size={18} color="var(--accent-pink)" />
-        </button>
+        <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+          <button
+            onClick={() => window.open(window.location.origin.includes('localhost') ? 'http://localhost:5173' : 'https://ranktcas-fawn-chi.vercel.app/', '_blank')}
+            style={{
+              background: '#e0f8ff', border: '2px solid var(--accent-blue)', borderRadius: '20px',
+              padding: '0.45rem 1rem', display: 'flex', alignItems: 'center', gap: '0.4rem',
+              fontWeight: 800, fontSize: '0.82rem', color: '#0369a1', cursor: 'pointer',
+              fontFamily: "'Kanit', sans-serif", transition: 'all 0.15s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#bfefff'}
+            onMouseLeave={e => e.currentTarget.style.background = '#e0f8ff'}
+          >
+            <GraduationCap size={16} /> มหาลัย
+          </button>
+          
+          <button
+            onClick={handleLogout}
+            style={{ background: '#fff0f5', border: '2px solid var(--accent-pink)', borderRadius: '50%', width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.15s' }}
+            onMouseEnter={e => e.currentTarget.style.background = '#ffe4ef'}
+            onMouseLeave={e => e.currentTarget.style.background = '#fff0f5'}
+          >
+            <LogOut size={18} color="var(--accent-pink)" />
+          </button>
+        </div>
       </div>
 
       {/* ── Candy score card ─────────────────────────────────────────────────── */}

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen } from 'lucide-react';
+import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen, GraduationCap } from 'lucide-react';
 
 export default function MasterAdmin() {
   const [teams, setTeams] = useState([]);           // live teams (realtime)
@@ -10,12 +10,164 @@ export default function MasterAdmin() {
   const [hideScores, setHideScores] = useState(null); // null = loading
   const [loading, setLoading] = useState(true);
 
+  // TCAS allocation states
+  const [allocationLoading, setAllocationLoading] = useState(false);
+  const [showAllocationSummary, setShowAllocationSummary] = useState(false);
+  const [summaryData, setSummaryData] = useState(null);
+
   // Adjust modal
   const [showAdjust, setShowAdjust] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [adjustAmount, setAdjustAmount] = useState('');
 
   const navigate = useNavigate();
+
+  const runTCASAllocation = async () => {
+    if (!window.confirm('คุณต้องการประมวลผลจัดสรรสาขา/คณะ TCAS สำหรับน้องๆ ทุกคนใช่หรือไม่?')) return;
+    setAllocationLoading(true);
+    try {
+      const { data: participants, error: pErr } = await supabase
+        .from('participants')
+        .select('*');
+      if (pErr) throw pErr;
+
+      const { data: teamsData, error: tErr } = await supabase
+        .from('teams')
+        .select('*');
+      if (tErr) throw tErr;
+
+      const teamScores = {};
+      teamsData.forEach(t => {
+        teamScores[t.name] = t.points || 0;
+      });
+
+      const pList = participants.map(p => {
+        const score = teamScores[p.team] || 0;
+        return {
+          id: p.id,
+          name: p.name,
+          team: p.team,
+          score: score,
+          ranks: [p.rank1, p.rank2, p.rank3, p.rank4, p.rank5].filter(r => r && r !== ''),
+          extra: p.extra || '',
+          results: [null, null, null],
+          randomFactor: Math.random()
+        };
+      }).filter(p => p.name !== '');
+
+      const defaultQuota = [
+        "1. วิทยาศาสตร์สุขภาพ",
+        "2. วิศวกรรมศาสตร์",
+        "3. ศึกษาศาสตร์/ครุศาสตร์",
+        "4. วิทยาการและการจัดการ",
+        "5. ศิลปกรรมศาสตร์",
+        "6. มนุษยศาสตร์และสังคมศาสตร์",
+        "7. รัฐศาสตร์และนิติศาสตร์",
+        "8. วนศาสตร์",
+        "9. ไม่รู้จะเรียนที่ไหนดี"
+      ];
+
+      const activities = defaultQuota.map(name => ({
+        name,
+        totalCap: 30,
+        roundCap: 10,
+        assigned: [0, 0, 0],
+        list: [[], [], []]
+      }));
+
+      pList.forEach(p => {
+        if (p.extra && p.extra !== '-') {
+          const extras = p.extra.split(',').map(s => s.trim());
+          extras.forEach(ext => {
+            if (ext && !activities.some(a => a.name === ext)) {
+              activities.push({
+                name: ext,
+                totalCap: 30,
+                roundCap: 10,
+                assigned: [0, 0, 0],
+                list: [[], [], []]
+              });
+            }
+          });
+        }
+      });
+
+      pList.sort((a, b) => {
+        if (b.score !== a.score) {
+          return b.score - a.score;
+        }
+        return b.randomFactor - a.randomFactor;
+      });
+
+      for (let r = 0; r < 3; r++) {
+        pList.forEach(p => {
+          let found = false;
+          for (let i = 0; i < p.ranks.length; i++) {
+            const pref = p.ranks[i];
+            const act = activities.find(a => a.name === pref);
+            
+            if (act && !p.results.includes(pref) && act.assigned[r] < act.roundCap) {
+              p.results[r] = pref;
+              act.assigned[r]++;
+              act.list[r].push(p.name);
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            for (let i = 0; i < p.ranks.length; i++) {
+              const pref = p.ranks[i];
+              const act = activities.find(a => a.name === pref);
+              
+              if (act && !p.results.includes(pref) && act.assigned[r] < act.totalCap) {
+                p.results[r] = pref;
+                act.assigned[r]++;
+                act.list[r].push(p.name);
+                break;
+              }
+            }
+          }
+        });
+      }
+
+      console.log('Updating participants in Supabase...');
+      const chunkSize = 30;
+      for (let i = 0; i < pList.length; i += chunkSize) {
+        const chunk = pList.slice(i, i + chunkSize);
+        const updatePromises = chunk.map(p => 
+          supabase
+            .from('participants')
+            .update({
+              r1: p.results[0] || 'รอดำเนินการประกาศผล',
+              r2: p.results[1] || 'รอดำเนินการประกาศผล',
+              r3: p.results[2] || 'รอดำเนินการประกาศผล'
+            })
+            .eq('id', p.id)
+        );
+        await Promise.all(updatePromises);
+      }
+
+      const stats = activities.map(act => ({
+        name: act.name,
+        r1: act.assigned[0],
+        r2: act.assigned[1],
+        r3: act.assigned[2],
+        total: act.assigned[0] + act.assigned[1] + act.assigned[2]
+      })).filter(s => s.total > 0);
+
+      setSummaryData({
+        totalAllocated: pList.length,
+        stats: stats
+      });
+      setShowAllocationSummary(true);
+
+      alert('🎉 ประมวลผลจัดสรรรอบคณะสำเร็จเรียบร้อยแล้ว!');
+    } catch (err) {
+      alert('เกิดข้อผิดพลาดในการประมวลผล: ' + err.message);
+    } finally {
+      setAllocationLoading(false);
+    }
+  };
   const realtimeChannelRef = useRef(null);
 
   // ─── Subscribe to realtime team updates ───────────────────────────────────
@@ -219,6 +371,21 @@ export default function MasterAdmin() {
             }}
           >
             <PartyPopper size={13} /> ประกาศผลรางวัล
+          </button>
+          
+          <button
+            onClick={runTCASAllocation}
+            disabled={allocationLoading}
+            style={{
+              background: 'linear-gradient(90deg, #3b82f6, #1d4ed8)', color: '#fff',
+              border: '1.5px solid #000', padding: '0.3rem 0.7rem', borderRadius: '8px',
+              fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '0.3rem',
+              boxShadow: '2px 2px 0px #000', transition: 'all 0.1s',
+              opacity: allocationLoading ? 0.7 : 1
+            }}
+          >
+            <GraduationCap size={13} /> {allocationLoading ? 'กำลังจัดสรร...' : 'ประมวลผล TCAS'}
           </button>
         </div>
       </div>
@@ -450,6 +617,43 @@ export default function MasterAdmin() {
             </div>
             <button onClick={() => setShowAdjust(false)} className="btn btn-secondary mt-3" style={{ width: '100%', padding: '0.7rem', borderRadius: '12px', fontSize: '0.95rem', border: '2px solid #000', boxShadow: '2px 2px 0px #000', background: '#f1f5f9' }}>
               ยกเลิก
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── TCAS Allocation Summary modal ────────────────────────────────────── */}
+      {showAllocationSummary && summaryData && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, backdropFilter: 'blur(4px)' }}>
+          <div className="glass-card" style={{ width: '90%', maxWidth: '500px', background: '#fff', border: '3px solid #1e293b', boxShadow: '8px 8px 0px #1e293b', maxHeight: '85vh', overflowY: 'auto' }}>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 900, marginBottom: '0.8rem', color: '#1d4ed8', fontFamily: "'Kanit', sans-serif" }}>
+              🎉 สรุปผลการจัดสรรคณะ TCAS สำเร็จ!
+            </h3>
+            <p style={{ marginBottom: '1.2rem', color: '#64748b', fontWeight: 700, fontSize: '0.95rem' }}>
+              ประมวลผลนักเรียนทั้งหมด: <span style={{ color: '#ff2e93', fontSize: '1.1rem', fontWeight: 900 }}>{summaryData.totalAllocated} คน</span>
+            </p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', background: '#1e293b', color: 'white', padding: '0.5rem 0.8rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.8rem' }}>
+                <span style={{ flex: 1 }}>สาขา/คณะ</span>
+                <span style={{ width: '50px', textAlign: 'center' }}>รอบ 1</span>
+                <span style={{ width: '50px', textAlign: 'center' }}>รอบ 2</span>
+                <span style={{ width: '50px', textAlign: 'center' }}>รอบ 3</span>
+                <span style={{ width: '60px', textAlign: 'center' }}>รวม</span>
+              </div>
+              {summaryData.stats.map((stat, idx) => (
+                <div key={idx} style={{ display: 'flex', padding: '0.5rem 0.8rem', borderBottom: '1px solid #f1f5f9', fontSize: '0.88rem', fontWeight: 700 }}>
+                  <span style={{ flex: 1, color: '#1e293b' }}>{stat.name}</span>
+                  <span style={{ width: '50px', textAlign: 'center', color: '#64748b' }}>{stat.r1}</span>
+                  <span style={{ width: '50px', textAlign: 'center', color: '#64748b' }}>{stat.r2}</span>
+                  <span style={{ width: '50px', textAlign: 'center', color: '#64748b' }}>{stat.r3}</span>
+                  <span style={{ width: '60px', textAlign: 'center', color: '#ff2e93', fontWeight: 900 }}>{stat.total}</span>
+                </div>
+              ))}
+            </div>
+
+            <button onClick={() => setShowAllocationSummary(false)} className="btn btn-secondary" style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', fontSize: '1rem', border: '2px solid #000', boxShadow: '2px 2px 0px #000' }}>
+              ปิดหน้าต่างสรุปผล
             </button>
           </div>
         </div>

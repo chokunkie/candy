@@ -7,6 +7,7 @@ import Leaderboard from './pages/Leaderboard';
 import MasterAdmin from './pages/MasterAdmin';
 import Reveal from './pages/Reveal';
 import HowToPlay from './pages/HowToPlay';
+import RankTCAS from './pages/RankTCAS';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/master" element={<div className="container container-large"><MasterAdmin /></div>} />
         <Route path="/reveal" element={<Reveal />} />
         <Route path="/how-to-play" element={<div className="container"><HowToPlay /></div>} />
+        <Route path="/ranktcas" element={<RankTCAS />} />
       </Routes>
     </BrowserRouter>
   );

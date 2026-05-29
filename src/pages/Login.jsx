@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { LogIn, ShieldAlert, Settings, Check } from 'lucide-react';
+import { LogIn, ShieldAlert, Settings, Check, GraduationCap } from 'lucide-react';
 
 const TEAMS = [
   { id: 'TEAM01', label: 'ครองแครงปิ๊นาศ' },
@@ -256,6 +256,23 @@ export default function Login() {
           )}
         </button>
       </form>
+
+      {/* ── Link to RankTCAS (Public Access) ─────────────────────────────── */}
+      <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '2px dashed var(--text-main)', textAlign: 'center' }}>
+        <button
+          type="button"
+          onClick={() => navigate('/ranktcas')}
+          className="btn btn-secondary"
+          style={{
+            background: '#e0f8ff', border: '3px solid var(--text-main)', borderRadius: '12px',
+            color: '#0369a1', fontWeight: 800, padding: '0.85rem'
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = '#bfefff'}
+          onMouseLeave={e => e.currentTarget.style.background = '#e0f8ff'}
+        >
+          <GraduationCap size={18} /> จัดอันดับ TCAS / ตรวจสอบผลจัดสรร
+        </button>
+      </div>
 
       <style>{`
         @keyframes popCard {
