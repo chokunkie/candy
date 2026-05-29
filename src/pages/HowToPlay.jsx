@@ -6,7 +6,7 @@ export default function HowToPlay() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
 
-  // สไลด์คำอธิบายแต่ละหน้า (ลบอิโมจิออกทั้งหมดตามที่ขอ)
+  // สไลด์คำอธิบายกติกา (ไม่มีอิโมจิในข้อความเลยตามที่ระบุ)
   const slides = [
     {
       title: "ยินดีต้อนรับสู่ Candy Camp",
@@ -27,7 +27,7 @@ export default function HowToPlay() {
     },
     {
       title: "เริ่มต้นการผจญภัย",
-      subtitle: "รับกระเป๋าสะสมแต้มดิจิทัล",
+      subtitle: "รับกระเป๋าสะสมแต้มดิจิทัลประจำกลุ่ม",
       icon: <Sparkles size={60} color="var(--accent-blue)" style={{ filter: 'drop-shadow(0 2px 8px rgba(0, 210, 255, 0.3))' }} />,
       color: "var(--accent-blue)",
       bg: "linear-gradient(135deg, rgba(0, 210, 255, 0.1) 0%, rgba(157, 78, 221, 0.1) 100%)",
@@ -56,7 +56,7 @@ export default function HowToPlay() {
           </div>
           <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
             <span style={{ background: 'var(--accent-pink)', color: '#fff', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.95rem', fontWeight: 900, flexShrink: 0 }}>2</span>
-            <p style={{ fontSize: '1.1rem', fontWeight: 600 }}>กดปุ่ม <span style={{ color: 'var(--accent-pink)', fontWeight: 800 }}>"จ่ายลูกอมเพื่อเล่น"</span> โดยแต้มจะหักออกทันที</p>
+            <p style={{ fontSize: '1.1rem', fontWeight: 600 }}>กดปุ่ม "จ่ายลูกอมเพื่อเล่น" โดยแต้มจะหักออกทันที</p>
           </div>
           <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
             <span style={{ background: 'var(--accent-green)', color: '#fff', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.95rem', fontWeight: 900, flexShrink: 0 }}>3</span>
@@ -136,6 +136,44 @@ export default function HowToPlay() {
           </div>
         </div>
       )
+    },
+    {
+      title: "สแกนเพื่อเข้าเล่นกิจกรรม",
+      subtitle: "สแกน QR Code เพื่อเปิดหน้าจอเข้าสู่ระบบ",
+      icon: <Sparkles size={60} color="var(--accent-green)" style={{ filter: 'drop-shadow(0 2px 8px rgba(16, 185, 129, 0.3))' }} />,
+      color: "var(--accent-green)",
+      bg: "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(157, 78, 221, 0.1) 100%)",
+      content: (
+        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+          <p style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>
+            หยิบมือถือของแต่ละกลุ่มขึ้นมาแล้วสแกน QR Code นี้เพื่อเปิดหน้าจอล็อกอินเล่นกิจกรรมได้ทันที
+          </p>
+          
+          <div style={{ 
+            background: '#ffffff', 
+            padding: '1.2rem', 
+            borderRadius: '24px', 
+            border: '4px solid #1e293b',
+            boxShadow: '0 12px 30px rgba(0,0,0,0.25)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: '0.5rem',
+            width: '210px',
+            height: '210px'
+          }}>
+            <img 
+              src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://candy-fawn-chi.vercel.app/login" 
+              alt="Scan to Login" 
+              style={{ width: '170px', height: '170px' }}
+            />
+          </div>
+          
+          <p style={{ fontSize: '1.05rem', color: 'var(--text-sub)', fontWeight: 700, letterSpacing: '0.5px' }}>
+            ลิงก์เข้าสู่ระบบตรง: candy-fawn-chi.vercel.app/login
+          </p>
+        </div>
+      )
     }
   ];
 
@@ -175,7 +213,7 @@ export default function HowToPlay() {
           background: activeSlide.bg,
           borderColor: activeSlide.color,
           padding: '3rem 2rem',
-          minHeight: '480px', // Taller card
+          minHeight: '490px', // Taller card
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',

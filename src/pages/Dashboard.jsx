@@ -93,35 +93,6 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* ── How to play banner ───────────────────────────────────────────────── */}
-      <div 
-        onClick={() => navigate('/how-to-play')}
-        style={{
-          padding: '1rem',
-          border: '2px solid #000',
-          borderRadius: '16px',
-          background: 'linear-gradient(135deg, rgba(255, 46, 147, 0.08) 0%, rgba(157, 78, 221, 0.08) 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          cursor: 'pointer',
-          marginBottom: '1rem',
-          boxShadow: '3px 3px 0px #000',
-          transition: 'transform 0.1s'
-        }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-          <Sparkles color="var(--accent-pink)" size={24} />
-          <div style={{ textAlign: 'left' }}>
-            <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, fontFamily: "'Kanit', sans-serif" }}>📖 วิธีการเล่นและกติกาค่าย</h4>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-sub)', margin: '0.1rem 0 0', fontWeight: 600 }}>กดอ่านกติกาง่ายๆ เพื่อเป็นราชาลูกอมกันนะน้องๆ!</p>
-          </div>
-        </div>
-        <ChevronRight size={18} color="var(--accent-pink)" />
-      </div>
-
       {/* ── Candy score card ─────────────────────────────────────────────────── */}
       <div style={{ padding: '1.8rem 1rem', border: '1.5px solid var(--accent-pink)', borderRadius: '16px', background: '#fff', textAlign: 'center', marginBottom: '1.5rem' }}>
         <p style={{ color: '#64748b', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.5px', marginBottom: '0.4rem', textTransform: 'uppercase' }}>ลูกอมคงเหลือ</p>
