@@ -603,7 +603,7 @@ export default function MasterAdmin() {
                               alignItems: 'center',
                               gap: '0.2rem'
                             }}>
-                              {tStat.submitted === tStat.total ? '✅' : '📝'} TCAS: {tStat.submitted} คน
+                              {tStat.submitted} คน
                             </span>
                           )}
                         </div>
@@ -725,7 +725,7 @@ export default function MasterAdmin() {
                               alignItems: 'center',
                               gap: '0.2rem'
                             }}>
-                              {tStat.submitted === tStat.total ? '✅' : '📝'} TCAS: {tStat.submitted} คน
+                              {tStat.submitted} คน
                             </span>
                           )}
                         </div>
@@ -938,7 +938,7 @@ export default function MasterAdmin() {
                       );
                     })}
                     <td style={{ padding: '0.8rem 0.5rem', background: '#1e293b', color: '#fff', fontSize: '1.05rem', fontWeight: 950 }}>
-                      {tcasStats.submitted} คน
+                      {tcasStats.submitted} / 166 คน
                     </td>
                   </tr>
                 </tbody>
