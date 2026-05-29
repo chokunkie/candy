@@ -49,12 +49,14 @@ export default function MasterAdmin() {
       if (error) throw error;
 
       if (participants) {
-        const total = participants.length;
-        const submitted = participants.filter(p => p.rank1 && p.rank1 !== '').length;
+        // Filter out participants without a team
+        const filteredParticipants = participants.filter(p => p.team && p.team !== '');
+        const total = filteredParticipants.length;
+        const submitted = filteredParticipants.filter(p => p.rank1 && p.rank1 !== '').length;
 
         const counts = {};
-        participants.forEach(p => {
-          const teamName = p.team || 'ยังไม่เลือกบ้าน';
+        filteredParticipants.forEach(p => {
+          const teamName = p.team;
           if (!counts[teamName]) {
             counts[teamName] = { 
               total: 0, 
@@ -79,11 +81,7 @@ export default function MasterAdmin() {
           submitted: counts[teamName].submitted,
           percent: counts[teamName].total > 0 ? Math.round((counts[teamName].submitted / counts[teamName].total) * 100) : 0,
           majors: counts[teamName].majors
-        })).sort((a, b) => {
-          if (a.name === 'ยังไม่เลือกบ้าน') return 1;
-          if (b.name === 'ยังไม่เลือกบ้าน') return -1;
-          return b.submitted - a.submitted;
-        });
+        })).sort((a, b) => b.submitted - a.submitted);
 
         setTcasStats({
           total,
@@ -535,13 +533,13 @@ export default function MasterAdmin() {
                   {tcasStats.submitted}
                 </span>
                 <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b', fontFamily: "'Kanit', sans-serif" }}>
-                  / 166 คน
+                  / 165 คน
                 </span>
               </div>
               {/* Mini progress bar */}
               <div style={{ width: '100%', height: '6px', background: '#cbd5e1', borderRadius: '999px', border: '1.5px solid #1e293b', overflow: 'hidden', marginTop: '0.2rem' }}>
                 <div style={{
-                  width: `${Math.min(100, Math.round((tcasStats.submitted / 166) * 100))}%`,
+                  width: `${Math.min(100, Math.round((tcasStats.submitted / 165) * 100))}%`,
                   height: '100%',
                   background: 'linear-gradient(90deg, #3b82f6, #ff2e93)',
                 }} />
@@ -941,7 +939,7 @@ export default function MasterAdmin() {
                       );
                     })}
                     <td style={{ padding: '0.8rem 0.5rem', background: '#1e293b', color: '#fff', fontSize: '1.05rem', fontWeight: 950 }}>
-                      {tcasStats.submitted} / 166 คน
+                      {tcasStats.submitted} / 165 คน
                     </td>
                   </tr>
                 </tbody>
