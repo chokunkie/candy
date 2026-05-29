@@ -3,10 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { LogIn, ShieldAlert, Settings, Check } from 'lucide-react';
 
-const TEAMS = Array.from({ length: 10 }, (_, i) => ({
-  id: `TEAM${String(i + 1).padStart(2, '0')}`,
-  label: `กลุ่มที่ ${i + 1}`,
-}));
+const TEAMS = [
+  { id: 'TEAM01', label: 'ครองแครงปิ๊นาศ' },
+  { id: 'TEAM02', label: 'บ้านท้ายบ้าบิ่น' },
+  { id: 'TEAM03', label: 'บ้านครองแครงกะทิสด' },
+  { id: 'TEAM04', label: 'บ้านขนมเปียกปูน' },
+  { id: 'TEAM05', label: 'บ้านบัวลอยไข่หวาน' },
+  { id: 'TEAM06', label: 'บ้านโรตีท้ายบังบ่าว' },
+  { id: 'TEAM07', label: 'บ้านsugar' },
+  { id: 'TEAM08', label: 'บ้านมาการอง อุอิ' },
+  { id: 'TEAM09', label: 'บ้านครองแครง' },
+  { id: 'TEAM10', label: 'บ้านลอดช่อง' },
+];
 
 export default function Login() {
   const [role, setRole] = useState('team');
