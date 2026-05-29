@@ -44,13 +44,18 @@ export default function MasterAdmin() {
   const [mocking, setMocking] = useState(false);
 
   const handleMockTCAS = async () => {
-    if (!window.confirm("คุณต้องการจำลองอันดับคณะ (Mock) ให้น้องๆ ทุกคนในระบบสุ่มเพื่อใช้ในการทดสอบใช่หรือไม่?")) return;
+    if (!window.confirm("คุณต้องการจำลองอันดับคณะ (Mock) ให้น้องๆ ทุกคนในระบบสุ่ม (รวมถึงสุ่มสังกัดบ้าน) เพื่อใช้ในการทดสอบใช่หรือไม่?")) return;
     setMocking(true);
     try {
       const { data: participants, error } = await supabase
         .from('participants')
         .select('id');
       if (error) throw error;
+
+      const teamNames = teams.map(t => t.name);
+      if (teamNames.length === 0) {
+        throw new Error("ไม่พบข้อมูลกลุ่ม/บ้านในระบบ");
+      }
 
       const defaultMajors = [
         "1. วิทยาศาสตร์สุขภาพ",
@@ -66,9 +71,11 @@ export default function MasterAdmin() {
 
       const updates = participants.map(p => {
         const shuffled = [...defaultMajors].sort(() => 0.5 - Math.random());
+        const randomTeam = teamNames[Math.floor(Math.random() * teamNames.length)];
         return supabase
           .from('participants')
           .update({
+            team: randomTeam,
             rank1: shuffled[0],
             rank2: shuffled[1],
             rank3: shuffled[2],
@@ -79,7 +86,7 @@ export default function MasterAdmin() {
       });
 
       await Promise.all(updates);
-      alert("จำลองสถิติเลือกอันดับ TCAS ของน้องๆ สำเร็จ!");
+      alert("จำลองสถิติเลือกอันดับ TCAS และสุ่มสังกัดบ้านให้น้องๆ ทุกคนสำเร็จ!");
       await fetchTCASStats();
     } catch (err) {
       console.error(err);
@@ -90,12 +97,13 @@ export default function MasterAdmin() {
   };
 
   const handleClearTCAS = async () => {
-    if (!window.confirm("⚠️ คำเตือน: คุณต้องการล้างข้อมูลอันดับคณะและผลลัพธ์ทั้งหมดของน้องทุกคนให้เป็นค่าว่างใช่หรือไม่? (สำหรับรีเซ็ตระบบกลับค่าเริ่มต้น)")) return;
+    if (!window.confirm("⚠️ คำเตือน: คุณต้องการล้างข้อมูลอันดับคณะ สังกัดบ้าน และผลลัพธ์ทั้งหมดของน้องทุกคนให้เป็นค่าเริ่มต้นใช่หรือไม่?")) return;
     setMocking(true);
     try {
       const { error } = await supabase
         .from('participants')
         .update({
+          team: null,
           rank1: null,
           rank2: null,
           rank3: null,
@@ -108,7 +116,7 @@ export default function MasterAdmin() {
         .not('name', 'is', null);
 
       if (error) throw error;
-      alert("ล้างข้อมูลการเลือกคณะและผลการจัดสรรเรียบร้อยแล้ว!");
+      alert("ล้างข้อมูลการเลือกคณะ ผลการจัดสรร และสังกัดบ้านเรียบร้อยแล้ว!");
       await fetchTCASStats();
     } catch (err) {
       console.error(err);
@@ -210,7 +218,7 @@ export default function MasterAdmin() {
           results: [null, null, null],
           randomFactor: Math.random()
         };
-      }).filter(p => p.name !== '');
+      }).filter(p => p.name !== '' && p.ranks.length > 0);
 
       const defaultQuota = [
         "1. วิทยาศาสตร์สุขภาพ",
