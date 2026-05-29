@@ -54,19 +54,19 @@ export default function MasterAdmin() {
 
         const counts = {};
         participants.forEach(p => {
-          if (!p.team) return;
-          if (!counts[p.team]) {
-            counts[p.team] = { 
+          const teamName = p.team || 'ยังไม่เลือกบ้าน';
+          if (!counts[teamName]) {
+            counts[teamName] = { 
               total: 0, 
               submitted: 0,
               majors: {} // major -> count
             };
           }
-          counts[p.team].total++;
+          counts[teamName].total++;
           if (p.rank1 && p.rank1 !== '') {
-            counts[p.team].submitted++;
+            counts[teamName].submitted++;
             const major = p.rank1;
-            counts[p.team].majors[major] = (counts[p.team].majors[major] || 0) + 1;
+            counts[teamName].majors[major] = (counts[teamName].majors[major] || 0) + 1;
           }
         });
 
@@ -76,7 +76,11 @@ export default function MasterAdmin() {
           submitted: counts[teamName].submitted,
           percent: counts[teamName].total > 0 ? Math.round((counts[teamName].submitted / counts[teamName].total) * 100) : 0,
           majors: counts[teamName].majors
-        })).sort((a, b) => b.submitted - a.submitted);
+        })).sort((a, b) => {
+          if (a.name === 'ยังไม่เลือกบ้าน') return 1;
+          if (b.name === 'ยังไม่เลือกบ้าน') return -1;
+          return b.submitted - a.submitted;
+        });
 
         setTcasStats({
           total,
@@ -913,8 +917,8 @@ export default function MasterAdmin() {
                             </td>
                           );
                         })}
-                        <td style={{ padding: '0.7rem 0.5rem', background: '#fee2e2', fontWeight: 900, color: '#ef4444', fontSize: '0.9rem', borderLeft: '1.5px solid #cbd5e1' }}>
-                          {teamRowTotal} / {team.total}
+                        <td style={{ padding: '0.7rem 0.5rem', background: '#fee2e2', fontWeight: 900, color: '#ef4444', fontSize: '0.95rem', borderLeft: '1.5px solid #cbd5e1' }}>
+                          {teamRowTotal} คน
                         </td>
                       </tr>
                     );
@@ -934,7 +938,7 @@ export default function MasterAdmin() {
                       );
                     })}
                     <td style={{ padding: '0.8rem 0.5rem', background: '#1e293b', color: '#fff', fontSize: '1.05rem', fontWeight: 950 }}>
-                      {tcasStats.submitted} / {tcasStats.total}
+                      {tcasStats.submitted} คน
                     </td>
                   </tr>
                 </tbody>
