@@ -3,6 +3,30 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen, GraduationCap } from 'lucide-react';
 
+const majorShortnames = {
+  "1. วิทยาศาสตร์สุขภาพ": "🩺 สุขภาพ",
+  "2. วิศวกรรมศาสตร์": "⚙️ วิศวะ",
+  "3. ศึกษาศาสตร์/ครุศาสตร์": "🍎 ครุศาสตร์",
+  "4. วิทยาการและการจัดการ": "💼 จัดการ",
+  "5. ศิลปกรรมศาสตร์": "🎨 ศิลปกรรม",
+  "6. มนุษยศาสตร์และสังคมศาสตร์": "🗣️ มนุษย์-สังคม",
+  "7. รัฐศาสตร์และนิติศาสตร์": "⚖️ นิติ-รัฐ",
+  "8. วนศาสตร์": "🌲 วนศาสตร์",
+  "9. ไม่รู้จะเรียนที่ไหนดี": "❓ ไม่ระบุ"
+};
+
+const majorColors = {
+  "1. วิทยาศาสตร์สุขภาพ": "#E63946",
+  "2. วิศวกรรมศาสตร์": "#457B9D",
+  "3. ศึกษาศาสตร์/ครุศาสตร์": "#D9A014",
+  "4. วิทยาการและการจัดการ": "#2A9D8F",
+  "5. ศิลปกรรมศาสตร์": "#9D4EDD",
+  "6. มนุษยศาสตร์และสังคมศาสตร์": "#F4A261",
+  "7. รัฐศาสตร์และนิติศาสตร์": "#1D3557",
+  "8. วนศาสตร์": "#40916C",
+  "9. ไม่รู้จะเรียนที่ไหนดี": "#6C757D"
+};
+
 export default function MasterAdmin() {
   const [teams, setTeams] = useState([]);           // live teams (realtime)
   const [frozenTeams, setFrozenTeams] = useState([]); // snapshot when hidden
@@ -14,6 +38,55 @@ export default function MasterAdmin() {
   const [allocationLoading, setAllocationLoading] = useState(false);
   const [showAllocationSummary, setShowAllocationSummary] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
+  const [tcasStats, setTcasStats] = useState(null);
+
+  const fetchTCASStats = async () => {
+    try {
+      const { data: participants, error } = await supabase
+        .from('participants')
+        .select('name, team, rank1');
+      if (error) throw error;
+
+      if (participants) {
+        const total = participants.length;
+        const submitted = participants.filter(p => p.rank1 && p.rank1 !== '').length;
+
+        const counts = {};
+        participants.forEach(p => {
+          if (!p.team) return;
+          if (!counts[p.team]) {
+            counts[p.team] = { 
+              total: 0, 
+              submitted: 0,
+              majors: {} // major -> count
+            };
+          }
+          counts[p.team].total++;
+          if (p.rank1 && p.rank1 !== '') {
+            counts[p.team].submitted++;
+            const major = p.rank1;
+            counts[p.team].majors[major] = (counts[p.team].majors[major] || 0) + 1;
+          }
+        });
+
+        const teamStats = Object.keys(counts).map(teamName => ({
+          name: teamName,
+          total: counts[teamName].total,
+          submitted: counts[teamName].submitted,
+          percent: counts[teamName].total > 0 ? Math.round((counts[teamName].submitted / counts[teamName].total) * 100) : 0,
+          majors: counts[teamName].majors
+        })).sort((a, b) => b.submitted - a.submitted);
+
+        setTcasStats({
+          total,
+          submitted,
+          teamStats
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching TCAS stats:', err);
+    }
+  };
 
   // Adjust modal
   const [showAdjust, setShowAdjust] = useState(false);
@@ -130,6 +203,18 @@ export default function MasterAdmin() {
         });
       }
 
+      // === Apply Hybrid Option for Round 3 (index 2) ===
+      pList.forEach(p => {
+        if (p.extra && p.extra !== '-') {
+          const r3Result = p.results[2];
+          if (r3Result && r3Result !== p.extra) {
+            p.results[2] = `${r3Result} หรือ ${p.extra}`;
+          } else if (!r3Result) {
+            p.results[2] = p.extra;
+          }
+        }
+      });
+
       console.log('Updating participants in Supabase...');
       const chunkSize = 30;
       for (let i = 0; i < pList.length; i += chunkSize) {
@@ -161,6 +246,7 @@ export default function MasterAdmin() {
       });
       setShowAllocationSummary(true);
 
+      await fetchTCASStats();
       alert('🎉 ประมวลผลจัดสรรรอบคณะสำเร็จเรียบร้อยแล้ว!');
     } catch (err) {
       alert('เกิดข้อผิดพลาดในการประมวลผล: ' + err.message);
@@ -212,6 +298,7 @@ export default function MasterAdmin() {
 
       // 1. Load teams
       await fetchTeams();
+      await fetchTCASStats();
 
       // 2. Load settings
       const { data: settingsData } = await supabase
@@ -405,184 +492,332 @@ export default function MasterAdmin() {
         </p>
       </div>
 
-      {/* ════════════════════════════════════════════════════════════════════ */}
-      {/* MODE A — SCORES VISIBLE: single full-width leaderboard table      */}
-      {/* ════════════════════════════════════════════════════════════════════ */}
-      {!hideScores && (
-        <div style={{ flex: 1 }}>
+      {/* 📊 DOUBLE COLUMN LAYOUT: TCAS DASHBOARD (LEFT) & CANDY LEADERBOARD (RIGHT) */}
+      <div className="master-grid" style={{ flex: 1, width: '100%' }}>
+        
+        {/* ============================================================== */}
+        {/* LEFT COLUMN: TCAS DASHBOARD & LEADERBOARD                     */}
+        {/* ============================================================== */}
+        <div className="master-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{
             background: '#ffffff', border: '3px solid #1e293b', borderRadius: '20px',
-            boxShadow: '8px 8px 0px #1e293b', overflow: 'hidden',
-            width: '100%', maxWidth: '860px', margin: '0 auto'
+            boxShadow: '6px 6px 0px #1e293b', padding: '1.2rem', display: 'flex', flexDirection: 'column',
+            gap: '1rem', height: 'fit-content'
           }}>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {teams.map((t, index) => {
-                const rank = index + 1;
-                const isFirst = rank === 1;
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '2.5px solid #1e293b', paddingBottom: '0.6rem' }}>
+              <GraduationCap size={24} color="#1d4ed8" />
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#1e293b', margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+                📊 แดชบอร์ดจัดสรร TCAS
+              </h2>
+            </div>
+
+            {/* Overall Submission Progress */}
+            {tcasStats && (
+              <div style={{ background: '#f8fafc', border: '2px solid #1e293b', borderRadius: '12px', padding: '0.8rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 800, fontSize: '0.9rem', color: '#1e293b' }}>
+                  <span>ความคืบหน้าการส่งอันดับ</span>
+                  <span style={{ color: '#ff2e93', fontSize: '1rem', fontWeight: 900 }}>
+                    {tcasStats.submitted} / {tcasStats.total} คน ({tcasStats.total > 0 ? Math.round((tcasStats.submitted / tcasStats.total) * 100) : 0}%)
+                  </span>
+                </div>
+                <div style={{ width: '100%', height: '14px', background: '#cbd5e1', borderRadius: '999px', border: '2px solid #1e293b', overflow: 'hidden', position: 'relative' }}>
+                  <div style={{
+                    width: `${tcasStats.total > 0 ? (tcasStats.submitted / tcasStats.total) * 100 : 0}%`,
+                    height: '100%',
+                    background: 'linear-gradient(90deg, #3b82f6, #ff2e93)',
+                    borderRadius: '999px',
+                    transition: 'width 0.5s ease-out'
+                  }} />
+                </div>
+              </div>
+            )}
+
+            {/* Teams Leaderboard sorted by submitted count */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 900, color: '#64748b', margin: '0.2rem 0 0', fontFamily: "'Kanit', sans-serif", letterSpacing: '0.5px' }}>
+                🏆 ลีดเดอร์บอร์ดบ้านส่ง TCAS
+              </h3>
+
+              {tcasStats?.teamStats.map((team, idx) => {
+                const teamSub = team.submitted;
+                const teamTot = team.total;
+                const isAllSubmitted = teamSub === teamTot && teamTot > 0;
+                
                 return (
-                  <div key={t.id} style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    padding: '0.7rem 2rem',
-                    background: isFirst ? '#fef9c3' : '#ffffff',
-                    borderBottom: rank === teams.length ? 'none' : '1px solid #e2e8f0',
-                    transition: 'background-color 0.2s, transform 0.15s, box-shadow 0.15s',
-                    animation: `slideInRow 0.45s cubic-bezier(0.22,1,0.36,1) both`,
-                    animationDelay: `${index * 0.06}s`,
-                    cursor: 'default'
+                  <div key={team.name} style={{
+                    background: isAllSubmitted ? '#f0fdf4' : '#ffffff',
+                    border: '2px solid #1e293b',
+                    borderRadius: '14px',
+                    padding: '0.8rem',
+                    boxShadow: '3px 3px 0px #1e293b',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
+                    transition: 'transform 0.15s',
+                    position: 'relative',
+                    overflow: 'hidden'
                   }}
-                  onMouseEnter={e => e.currentTarget.style.transform = 'translateX(4px)'}
-                  onMouseLeave={e => e.currentTarget.style.transform = 'translateX(0)'}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
                   >
-                    {/* Rank badge + name */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.4rem' }}>
-                      <div style={{ width: '60px', display: 'flex', justifyContent: 'flex-start', flexShrink: 0 }}>
-                        {renderBadge(rank)}
+                    {/* Team header status */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <span style={{
+                          width: '20px', height: '20px',
+                          borderRadius: '50%',
+                          background: idx === 0 ? '#f59e0b' : idx === 1 ? '#cbd5e1' : idx === 2 ? '#b45309' : '#e2e8f0',
+                          border: '1.5px solid #1e293b',
+                          color: idx < 3 ? '#ffffff' : '#475569',
+                          fontSize: '0.7rem',
+                          fontWeight: 900,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          {idx + 1}
+                        </span>
+                        <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: '#1e293b', fontFamily: "'Kanit', sans-serif" }}>
+                          {team.name}
+                        </h4>
                       </div>
-                      <div>
-                        <h2 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e293b', margin: 0, fontFamily: "'Kanit', sans-serif", lineHeight: '1.2' }}>
-                          {t.name}
-                        </h2>
-                        <p style={{ color: '#94a3b8', fontSize: '0.75rem', margin: '0.1rem 0 0', fontWeight: 700, letterSpacing: '0.5px' }}>
-                          ID: {t.id}
-                        </p>
-                      </div>
+                      <span style={{
+                        fontSize: '0.85rem',
+                        fontWeight: 900,
+                        color: isAllSubmitted ? '#15803d' : '#ff2e93',
+                        background: isAllSubmitted ? '#dcfce7' : '#fee2e2',
+                        border: '1.5px solid #1e293b',
+                        padding: '0.1rem 0.5rem',
+                        borderRadius: '6px'
+                      }}>
+                        {teamSub} / {teamTot} คน
+                      </span>
                     </div>
 
-                    {/* Score + gear */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                        <span style={{ fontSize: '2rem', fontWeight: 900, color: '#ff2e93', fontFamily: "'Kanit', sans-serif", lineHeight: 1, textShadow: '1px 1px 0px #1e293b' }}>
-                          {t.points}
-                        </span>
-                        <span style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: 800, marginLeft: '0.3rem', fontFamily: "'Kanit', sans-serif" }}>
-                          ลูกอม
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => { setSelectedTeam(t); setShowAdjust(true); }}
-                        style={{ background: 'none', border: 'none', padding: '0.3rem', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: '6px', color: '#94a3b8', transition: 'all 0.15s' }}
-                        onMouseEnter={e => e.currentTarget.style.color = '#ff2e93'}
-                        onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
-                      >
-                        <Settings size={16} />
-                      </button>
+                    {/* Progress Bar for team */}
+                    <div style={{ width: '100%', height: '8px', background: '#cbd5e1', borderRadius: '999px', border: '1.5px solid #1e293b', overflow: 'hidden' }}>
+                      <div style={{
+                        width: `${teamTot > 0 ? (teamSub / teamTot) * 100 : 0}%`,
+                        height: '100%',
+                        background: isAllSubmitted ? '#10b981' : '#ff2e93',
+                        transition: 'width 0.4s ease-out'
+                      }} />
                     </div>
+
+                    {/* Majors selection breakdown under this team */}
+                    {Object.keys(team.majors).length > 0 ? (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem', marginTop: '0.2rem', borderTop: '1px dashed #cbd5e1', paddingTop: '0.4rem' }}>
+                        {Object.entries(team.majors)
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([majorName, count]) => {
+                            const label = majorShortnames[majorName] || majorName;
+                            const color = majorColors[majorName] || '#64748b';
+                            return (
+                              <span key={majorName} style={{
+                                fontSize: '0.7rem',
+                                fontWeight: 800,
+                                background: '#f8fafc',
+                                border: `1.5px solid #1e293b`,
+                                borderRadius: '6px',
+                                padding: '0.1rem 0.35rem',
+                                color: color,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.2rem'
+                              }}>
+                                {label} <b style={{ color: '#1e293b', marginLeft: '0.1rem' }}>{count}</b>
+                              </span>
+                            );
+                          })}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontStyle: 'italic', marginTop: '0.1rem' }}>
+                        ยังไม่มีน้องส่งข้อมูล
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
           </div>
         </div>
-      )}
 
-      {/* ════════════════════════════════════════════════════════════════════ */}
-      {/* MODE B — SCORES HIDDEN: full-width frozen name-only table          */}
-      {/* ════════════════════════════════════════════════════════════════════ */}
-      {hideScores && (
-        <div style={{ flex: 1 }}>
-
-          {/* Freeze banner */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem',
-            background: 'linear-gradient(90deg, #1e293b 0%, #334155 100%)',
-            border: '2px solid #000', borderRadius: '12px',
-            padding: '0.6rem 1.2rem', marginBottom: '1.2rem',
-            color: '#fff', boxShadow: '4px 4px 0px #000'
-          }}>
-            <Lock size={16} color="#f59e0b" />
-            <span style={{ fontWeight: 800, fontSize: '0.9rem', fontFamily: "'Kanit', sans-serif" }}>
-              ซ่อนคะแนนจากน้องๆ แล้ว —
-            </span>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8' }}>
-              📸 บันทึกล่าสุด: {frozenTime} น.
-            </span>
-          </div>
-
-          {/* Full-width name-only table */}
-          <div style={{
-            background: '#ffffff', border: '3px solid #1e293b', borderRadius: '16px',
-            boxShadow: '8px 8px 0px #1e293b', overflow: 'hidden', width: '100%',
-            maxWidth: '860px', margin: '0 auto'
-          }}>
-            {/* Table header */}
+        {/* ============================================================== */}
+        {/* RIGHT COLUMN: CANDY LEADERBOARD (LIVE OR SNAPPED)             */}
+        {/* ============================================================== */}
+        <div className="master-main" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          
+          {/* MODE A — SCORES VISIBLE */}
+          {!hideScores && (
             <div style={{
-              background: '#1e293b', color: '#fff', padding: '0.8rem 2rem',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+              background: '#ffffff', border: '3px solid #1e293b', borderRadius: '20px',
+              boxShadow: '8px 8px 0px #1e293b', overflow: 'hidden',
+              width: '100%'
             }}>
-              <span style={{ fontWeight: 900, fontSize: '1rem', fontFamily: "'Kanit', sans-serif", letterSpacing: '1px' }}>
-                ชื่อกลุ่ม
-              </span>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                <Snowflake size={13} /> หยุดอัปเดตชั่วคราว
-              </span>
-            </div>
-
-            {/* Team rows — names only, no rank, no score */}
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {frozenTeams.map((t, idx) => (
-                <div key={t.id} style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '0.85rem 2rem',
-                  background: '#ffffff',
-                  borderBottom: idx === frozenTeams.length - 1 ? 'none' : '1px solid #e2e8f0',
-                  transition: 'background 0.2s'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
-                    {/* Blank circle placeholder instead of rank */}
-                    <div style={{
-                      width: '34px', height: '34px', borderRadius: '50%',
-                      border: '2px dashed #cbd5e1', background: '#f8fafc',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0
-                    }}>
-                      <Lock size={14} color="#cbd5e1" />
-                    </div>
-
-                    <h2 style={{
-                      fontSize: '1.25rem', fontWeight: 900, color: '#1e293b',
-                      margin: 0, fontFamily: "'Kanit', sans-serif"
-                    }}>
-                      {t.name}
-                    </h2>
-                  </div>
-
-                  {/* Score hidden indicator + Edit button */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                    <div style={{
-                      background: '#f1f5f9', border: '2px dashed #cbd5e1',
-                      borderRadius: '8px', padding: '0.3rem 0.9rem',
-                      fontSize: '0.85rem', fontWeight: 800, color: '#94a3b8',
-                      fontFamily: "'Kanit', sans-serif",
-                      display: 'flex', alignItems: 'center', gap: '0.3rem'
-                    }}>
-                      <Lock size={13} /> ??? ลูกอม
-                    </div>
-                    
-                    <button
-                      onClick={() => { setSelectedTeam(t); setShowAdjust(true); }}
-                      style={{ background: 'none', border: 'none', padding: '0.3rem', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: '6px', color: '#94a3b8', transition: 'all 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.color = '#ff2e93'}
-                      onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {teams.map((t, index) => {
+                  const rank = index + 1;
+                  const isFirst = rank === 1;
+                  return (
+                    <div key={t.id} style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: '0.7rem 2rem',
+                      background: isFirst ? '#fef9c3' : '#ffffff',
+                      borderBottom: rank === teams.length ? 'none' : '1px solid #e2e8f0',
+                      transition: 'background-color 0.2s, transform 0.15s, box-shadow 0.15s',
+                      animation: `slideInRow 0.45s cubic-bezier(0.22,1,0.36,1) both`,
+                      animationDelay: `${index * 0.06}s`,
+                      cursor: 'default'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'translateX(4px)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'translateX(0)'}
                     >
-                      <Settings size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                      {/* Rank badge + name */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1.4rem' }}>
+                        <div style={{ width: '60px', display: 'flex', justifyContent: 'flex-start', flexShrink: 0 }}>
+                          {renderBadge(rank)}
+                        </div>
+                        <div>
+                          <h2 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e293b', margin: 0, fontFamily: "'Kanit', sans-serif", lineHeight: '1.2' }}>
+                            {t.name}
+                          </h2>
+                          <p style={{ color: '#94a3b8', fontSize: '0.75rem', margin: '0.1rem 0 0', fontWeight: 700, letterSpacing: '0.5px' }}>
+                            ID: {t.id}
+                          </p>
+                        </div>
+                      </div>
 
-            {/* Footer note */}
-            <div style={{
-              background: '#f8fafc', borderTop: '2px dashed #e2e8f0',
-              padding: '0.7rem 2rem', textAlign: 'center'
-            }}>
-              <p style={{ fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', margin: 0, fontFamily: "'Kanit', sans-serif" }}>
-                กดปุ่ม <b>"โชว์ปกติ"</b> ในแถบด้านบนเพื่อเปิดคะแนนและกลับสู่โหมดเรียลไทม์ครับ 🔓
-              </p>
+                      {/* Score + gear */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                          <span style={{ fontSize: '2rem', fontWeight: 900, color: '#ff2e93', fontFamily: "'Kanit', sans-serif", lineHeight: 1, textShadow: '1px 1px 0px #1e293b' }}>
+                            {t.points}
+                          </span>
+                          <span style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: 800, marginLeft: '0.3rem', fontFamily: "'Kanit', sans-serif" }}>
+                            ลูกอม
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => { setSelectedTeam(t); setShowAdjust(true); }}
+                          style={{ background: 'none', border: 'none', padding: '0.3rem', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: '6px', color: '#94a3b8', transition: 'all 0.15s' }}
+                          onMouseEnter={e => e.currentTarget.style.color = '#ff2e93'}
+                          onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                        >
+                          <Settings size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* MODE B — SCORES HIDDEN */}
+          {hideScores && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {/* Freeze banner */}
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem',
+                background: 'linear-gradient(90deg, #1e293b 0%, #334155 100%)',
+                border: '2px solid #000', borderRadius: '12px',
+                padding: '0.6rem 1.2rem',
+                color: '#fff', boxShadow: '4px 4px 0px #000'
+              }}>
+                <Lock size={16} color="#f59e0b" />
+                <span style={{ fontWeight: 800, fontSize: '0.9rem', fontFamily: "'Kanit', sans-serif" }}>
+                  ซ่อนคะแนนจากน้องๆ แล้ว —
+                </span>
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8' }}>
+                  📸 บันทึกล่าสุด: {frozenTime} น.
+                </span>
+              </div>
+
+              {/* Full-width name-only table */}
+              <div style={{
+                background: '#ffffff', border: '3px solid #1e293b', borderRadius: '16px',
+                boxShadow: '8px 8px 0px #1e293b', overflow: 'hidden', width: '100%'
+              }}>
+                {/* Table header */}
+                <div style={{
+                  background: '#1e293b', color: '#fff', padding: '0.8rem 2rem',
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                }}>
+                  <span style={{ fontWeight: 900, fontSize: '1rem', fontFamily: "'Kanit', sans-serif", letterSpacing: '1px' }}>
+                    ชื่อกลุ่ม
+                  </span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <Snowflake size={13} /> หยุดอัปเดตชั่วคราว
+                  </span>
+                </div>
+
+                {/* Team rows — names only */}
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {frozenTeams.map((t, idx) => (
+                    <div key={t.id} style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '0.85rem 2rem',
+                      background: '#ffffff',
+                      borderBottom: idx === frozenTeams.length - 1 ? 'none' : '1px solid #e2e8f0',
+                      transition: 'background 0.2s'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
+                        <div style={{
+                          width: '34px', height: '34px', borderRadius: '50%',
+                          border: '2px dashed #cbd5e1', background: '#f8fafc',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          flexShrink: 0
+                        }}>
+                          <Lock size={14} color="#cbd5e1" />
+                        </div>
+
+                        <h2 style={{
+                          fontSize: '1.25rem', fontWeight: 900, color: '#1e293b',
+                          margin: 0, fontFamily: "'Kanit', sans-serif"
+                        }}>
+                          {t.name}
+                        </h2>
+                      </div>
+
+                      {/* Score hidden indicator + Edit button */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                        <div style={{
+                          background: '#f1f5f9', border: '2px dashed #cbd5e1',
+                          borderRadius: '8px', padding: '0.3rem 0.9rem',
+                          fontSize: '0.85rem', fontWeight: 800, color: '#94a3b8',
+                          fontFamily: "'Kanit', sans-serif",
+                          display: 'flex', alignItems: 'center', gap: '0.3rem'
+                        }}>
+                          <Lock size={13} /> ??? ลูกอม
+                        </div>
+                        
+                        <button
+                          onClick={() => { setSelectedTeam(t); setShowAdjust(true); }}
+                          style={{ background: 'none', border: 'none', padding: '0.3rem', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: '6px', color: '#94a3b8', transition: 'all 0.15s' }}
+                          onMouseEnter={e => e.currentTarget.style.color = '#ff2e93'}
+                          onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                        >
+                          <Settings size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Footer note */}
+                <div style={{
+                  background: '#f8fafc', borderTop: '2px dashed #e2e8f0',
+                  padding: '0.7rem 2rem', textAlign: 'center'
+                }}>
+                  <p style={{ fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+                    กดปุ่ม <b>"โชว์ปกติ"</b> ในแถบด้านบนเพื่อเปิดคะแนนและกลับสู่โหมดเรียลไทม์ครับ 🔓
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* ── Adjust points modal ───────────────────────────────────────────── */}
       {showAdjust && selectedTeam && (

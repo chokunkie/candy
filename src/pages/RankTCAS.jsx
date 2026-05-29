@@ -20,6 +20,18 @@ const activitiesData = [
   { name: "9. ไม่รู้จะเรียนที่ไหนดี", icon: HelpCircle, color: "#6C757D", bg: "#f0f1f2" }
 ];
 
+const roomMapping = {
+  "1. วิทยาศาสตร์สุขภาพ": "ห้อง 435",
+  "2. วิศวกรรมศาสตร์": "ห้อง 434",
+  "3. ศึกษาศาสตร์/ครุศาสตร์": "ห้อง 433",
+  "4. วิทยาการและการจัดการ": "ห้อง 432",
+  "5. ศิลปกรรมศาสตร์": "ห้อง 422",
+  "6. มนุษยศาสตร์และสังคมศาสตร์": "ห้อง 423",
+  "7. รัฐศาสตร์และนิติศาสตร์": "ห้อง 424",
+  "8. วนศาสตร์": "ห้อง 425",
+  "9. ไม่รู้จะเรียนที่ไหนดี": "นั่งอยู่ที่เดิมก่อน"
+};
+
 export default function RankTCAS() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -269,7 +281,7 @@ export default function RankTCAS() {
       </header>
 
       {/* Identity Search Bar */}
-      <div className="glass-card" style={{ padding: '1.2rem', marginBottom: '2rem' }}>
+      <div className="glass-card" style={{ padding: '1.2rem', marginBottom: '2rem', position: 'relative', zIndex: 50 }}>
         <div className="form-group" style={{ margin: 0 }} ref={autocompleteRef}>
           <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Search size={18} /> พิมพ์ชื่อเพื่อค้นหาประวัติของคุณ:
@@ -599,7 +611,23 @@ export default function RankTCAS() {
                           รอบที่ {item.round}
                         </div>
                         <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--text-main)', marginTop: '0.2rem' }}>
-                          {isAssigned ? item.val : 'รอดำเนินการประกาศผล'}
+                          {isAssigned ? (
+                            <>
+                              {item.val}
+                              <div style={{ fontSize: '0.9rem', color: '#0284c7', fontWeight: 800, marginTop: '0.25rem', fontFamily: "'Kanit', sans-serif" }}>
+                                📍 สถานที่: {(() => {
+                                  if (item.val.includes(' หรือ ')) {
+                                    const parts = item.val.split(' หรือ ');
+                                    const normalMajor = parts[0].trim();
+                                    const specialMajor = parts[1].trim();
+                                    const normalRoom = roomMapping[normalMajor] || 'ห้องเรียนวิชาเลือกพิเศษ';
+                                    return `${normalRoom} (มีรุ่นพี่สาขา "${specialMajor}" ไหม? 💡 ถ้ามีรุ่นพี่ให้ไปที่นั่น, ถ้าไม่มีรุ่นพี่คอยชี้แนะให้เรียนตามปกติที่ ${normalRoom})`;
+                                  }
+                                  return roomMapping[item.val.trim()] || 'ห้องเรียนวิชาเลือกพิเศษ (สับเปลี่ยนตามวิชา)';
+                                })()}
+                              </div>
+                            </>
+                          ) : 'รอดำเนินการประกาศผล'}
                         </div>
                       </div>
 
