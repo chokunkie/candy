@@ -40,6 +40,7 @@ export default function MasterAdmin() {
   const [showPreAllocation, setShowPreAllocation] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
   const [tcasStats, setTcasStats] = useState(null);
+  const [selectedTeamForModal, setSelectedTeamForModal] = useState(null);
 
   const fetchTCASStats = async () => {
     try {
@@ -86,7 +87,8 @@ export default function MasterAdmin() {
         setTcasStats({
           total,
           submitted,
-          teamStats
+          teamStats,
+          rawParticipants: filteredParticipants
         });
       }
     } catch (err) {
@@ -888,19 +890,26 @@ export default function MasterAdmin() {
                     let teamRowTotal = 0;
                     return (
                       <tr key={team.name} style={{ background: idx % 2 === 0 ? '#ffffff' : '#f8fafc', textAlign: 'center', fontWeight: 700, borderBottom: '1px solid #cbd5e1' }}>
-                        <td style={{ 
-                          padding: '0.7rem 1rem', 
-                          borderRight: '2.5px solid #1e293b', 
-                          textAlign: 'left', 
-                          fontWeight: 900, 
-                          color: '#1e293b', 
-                          background: idx % 2 === 0 ? '#ffffff' : '#f8fafc',
-                          position: 'sticky', 
-                          left: 0, 
-                          zIndex: 5,
-                          boxShadow: '2px 0px 4px rgba(0,0,0,0.05)'
-                        }}>
-                          {team.name}
+                        <td 
+                          onClick={() => setSelectedTeamForModal(team.name)}
+                          onMouseEnter={e => { e.currentTarget.style.color = '#ff2e93'; e.currentTarget.style.textDecoration = 'underline'; }}
+                          onMouseLeave={e => { e.currentTarget.style.color = '#1e293b'; e.currentTarget.style.textDecoration = 'none'; }}
+                          style={{ 
+                            padding: '0.7rem 1rem', 
+                            borderRight: '2.5px solid #1e293b', 
+                            textAlign: 'left', 
+                            fontWeight: 900, 
+                            color: '#1e293b', 
+                            background: idx % 2 === 0 ? '#ffffff' : '#f8fafc',
+                            position: 'sticky', 
+                            left: 0, 
+                            zIndex: 5,
+                            boxShadow: '2px 0px 4px rgba(0,0,0,0.05)',
+                            cursor: 'pointer',
+                            transition: 'color 0.2s'
+                          }}
+                        >
+                          {team.name} 🔍
                         </td>
                         {Object.keys(majorShortnames).map(majorKey => {
                           const count = team.majors[majorKey] || 0;
@@ -977,6 +986,60 @@ export default function MasterAdmin() {
                 <GraduationCap size={20} /> เริ่มระบบประมวลผลจัดสรร TCAS ทันที
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── TCAS Team Participants Modal ────────────────────────────────────── */}
+      {selectedTeamForModal && tcasStats && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 110, backdropFilter: 'blur(4px)' }}>
+          <div className="glass-card" style={{ width: '95%', maxWidth: '450px', background: '#fff', border: '3.5px solid #1e293b', boxShadow: '12px 12px 0px #1e293b', maxHeight: '85vh', overflowY: 'auto', padding: '1.5rem', borderRadius: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '3px solid #1e293b', paddingBottom: '0.8rem', marginBottom: '1.2rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <BookOpen size={24} color="#1d4ed8" />
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#1e293b', margin: 0, fontFamily: "'Kanit', sans-serif" }}>
+                  รายชื่อน้องที่ลงทะเบียนแล้ว
+                </h3>
+              </div>
+              <button 
+                onClick={() => setSelectedTeamForModal(null)}
+                style={{ background: '#f1f5f9', border: '2.5px solid #1e293b', borderRadius: '8px', cursor: 'pointer', padding: '0.3rem 0.6rem', fontWeight: 900, fontSize: '0.85rem', boxShadow: '2px 2px 0px #1e293b' }}
+              >
+                ✕ ปิด
+              </button>
+            </div>
+
+            <div style={{ marginBottom: '1.2rem', padding: '0.6rem 1rem', background: '#f1f5f9', border: '2px solid #cbd5e1', borderRadius: '12px', fontWeight: 800, fontSize: '0.95rem', color: '#1e293b' }}>
+              🏠 กลุ่ม/บ้าน: {selectedTeamForModal}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', maxHeight: '50vh', overflowY: 'auto', paddingRight: '0.3rem' }}>
+              {tcasStats.rawParticipants
+                .filter(p => p.team === selectedTeamForModal && p.rank1 && p.rank1 !== '')
+                .map((student, sIdx) => (
+                  <div key={student.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.8rem 1rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '14px', transition: 'all 0.2s' }}>
+                    <div style={{ fontWeight: 800, color: '#1e293b' }}>
+                      {sIdx + 1}. {student.name}
+                    </div>
+                    <div style={{ background: '#dbeafe', color: '#1e40af', fontSize: '0.75rem', fontWeight: 900, padding: '0.25rem 0.6rem', borderRadius: '999px', border: '1.5px solid #3b82f6' }}>
+                      {student.rank1.replace(/^\d+\.\s*/, '').trim()}
+                    </div>
+                  </div>
+                ))}
+              {tcasStats.rawParticipants.filter(p => p.team === selectedTeamForModal && p.rank1 && p.rank1 !== '').length === 0 && (
+                <div style={{ padding: '2rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.9rem', textAlign: 'center' }}>
+                  ยังไม่มีน้องในบ้านนี้ลงทะเบียนเลือกคณะ
+                </div>
+              )}
+            </div>
+
+            <button 
+              onClick={() => setSelectedTeamForModal(null)} 
+              className="btn btn-secondary" 
+              style={{ width: '100%', marginTop: '1.5rem', padding: '0.8rem', borderRadius: '12px', fontSize: '1rem', border: '2.5px solid #1e293b', boxShadow: '4px 4px 0px #1e293b', background: '#f1f5f9', fontWeight: 800 }}
+            >
+              ✕ ปิดหน้าต่าง
+            </button>
           </div>
         </div>
       )}
