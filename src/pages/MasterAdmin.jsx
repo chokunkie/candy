@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen, GraduationCap } from 'lucide-react';
+import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen, GraduationCap, Database, Trash2 } from 'lucide-react';
 
 const majorShortnames = {
   "วิทยาศาสตร์สุขภาพ": "สุขภาพ",
@@ -41,6 +41,82 @@ export default function MasterAdmin() {
   const [summaryData, setSummaryData] = useState(null);
   const [tcasStats, setTcasStats] = useState(null);
   const [selectedTeamForModal, setSelectedTeamForModal] = useState(null);
+  const [mocking, setMocking] = useState(false);
+
+  const handleMockTCAS = async () => {
+    if (!window.confirm("คุณต้องการจำลองอันดับคณะ (Mock) ให้น้องๆ ทุกคนในระบบสุ่มเพื่อใช้ในการทดสอบใช่หรือไม่?")) return;
+    setMocking(true);
+    try {
+      const { data: participants, error } = await supabase
+        .from('participants')
+        .select('id');
+      if (error) throw error;
+
+      const defaultMajors = [
+        "1. วิทยาศาสตร์สุขภาพ",
+        "2. วิศวกรรมศาสตร์",
+        "3. ศึกษาศาสตร์/ครุศาสตร์",
+        "4. วิทยาการและการจัดการ",
+        "5. ศิลปกรรมศาสตร์",
+        "6. มนุษยศาสตร์และสังคมศาสตร์",
+        "7. รัฐศาสตร์และนิติศาสตร์",
+        "8. วนศาสตร์",
+        "9. ไม่รู้จะเรียนที่ไหนดี"
+      ];
+
+      const updates = participants.map(p => {
+        const shuffled = [...defaultMajors].sort(() => 0.5 - Math.random());
+        return supabase
+          .from('participants')
+          .update({
+            rank1: shuffled[0],
+            rank2: shuffled[1],
+            rank3: shuffled[2],
+            rank4: shuffled[3],
+            rank5: shuffled[4]
+          })
+          .eq('id', p.id);
+      });
+
+      await Promise.all(updates);
+      alert("จำลองสถิติเลือกอันดับ TCAS ของน้องๆ สำเร็จ!");
+      await fetchTCASStats();
+    } catch (err) {
+      console.error(err);
+      alert("เกิดข้อผิดพลาดในการจำลองข้อมูล: " + err.message);
+    } finally {
+      setMocking(false);
+    }
+  };
+
+  const handleClearTCAS = async () => {
+    if (!window.confirm("⚠️ คำเตือน: คุณต้องการล้างข้อมูลอันดับคณะและผลลัพธ์ทั้งหมดของน้องทุกคนให้เป็นค่าว่างใช่หรือไม่? (สำหรับรีเซ็ตระบบกลับค่าเริ่มต้น)")) return;
+    setMocking(true);
+    try {
+      const { error } = await supabase
+        .from('participants')
+        .update({
+          rank1: null,
+          rank2: null,
+          rank3: null,
+          rank4: null,
+          rank5: null,
+          r1: null,
+          r2: null,
+          r3: null
+        })
+        .not('name', 'is', null);
+
+      if (error) throw error;
+      alert("ล้างข้อมูลการเลือกคณะและผลการจัดสรรเรียบร้อยแล้ว!");
+      await fetchTCASStats();
+    } catch (err) {
+      console.error(err);
+      alert("เกิดข้อผิดพลาดในการล้างข้อมูล: " + err.message);
+    } finally {
+      setMocking(false);
+    }
+  };
 
   const fetchTCASStats = async () => {
     try {
@@ -470,17 +546,47 @@ export default function MasterAdmin() {
           
           <button
             onClick={() => setShowPreAllocation(true)}
-            disabled={allocationLoading}
+            disabled={allocationLoading || mocking}
             style={{
               background: 'linear-gradient(90deg, #3b82f6, #1d4ed8)', color: '#fff',
               border: '1.5px solid #000', padding: '0.3rem 0.7rem', borderRadius: '8px',
               fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: '0.3rem',
               boxShadow: '2px 2px 0px #000', transition: 'all 0.1s',
-              opacity: allocationLoading ? 0.7 : 1
+              opacity: (allocationLoading || mocking) ? 0.7 : 1
             }}
           >
             <GraduationCap size={13} /> {allocationLoading ? 'กำลังจัดสรร...' : 'ประมวลผล TCAS'}
+          </button>
+
+          <button
+            onClick={handleMockTCAS}
+            disabled={allocationLoading || mocking}
+            style={{
+              background: 'linear-gradient(90deg, #f59e0b, #d97706)', color: '#fff',
+              border: '1.5px solid #000', padding: '0.3rem 0.7rem', borderRadius: '8px',
+              fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '0.3rem',
+              boxShadow: '2px 2px 0px #000', transition: 'all 0.1s',
+              opacity: (allocationLoading || mocking) ? 0.7 : 1
+            }}
+          >
+            <Database size={13} /> {mocking ? 'กำลังจำลอง...' : 'ม๊อกสถิติ'}
+          </button>
+
+          <button
+            onClick={handleClearTCAS}
+            disabled={allocationLoading || mocking}
+            style={{
+              background: 'linear-gradient(90deg, #ef4444, #dc2626)', color: '#fff',
+              border: '1.5px solid #000', padding: '0.3rem 0.7rem', borderRadius: '8px',
+              fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '0.3rem',
+              boxShadow: '2px 2px 0px #000', transition: 'all 0.1s',
+              opacity: (allocationLoading || mocking) ? 0.7 : 1
+            }}
+          >
+            <Trash2 size={13} /> ล้างสถิติ
           </button>
         </div>
       </div>
