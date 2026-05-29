@@ -4,15 +4,15 @@ import { supabase } from '../lib/supabase';
 import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen, GraduationCap } from 'lucide-react';
 
 const majorShortnames = {
-  "1. วิทยาศาสตร์สุขภาพ": "🩺 สุขภาพ",
-  "2. วิศวกรรมศาสตร์": "⚙️ วิศวะ",
-  "3. ศึกษาศาสตร์/ครุศาสตร์": "🍎 ครุศาสตร์",
-  "4. วิทยาการและการจัดการ": "💼 จัดการ",
-  "5. ศิลปกรรมศาสตร์": "🎨 ศิลปกรรม",
-  "6. มนุษยศาสตร์และสังคมศาสตร์": "🗣️ มนุษย์-สังคม",
-  "7. รัฐศาสตร์และนิติศาสตร์": "⚖️ นิติ-รัฐ",
-  "8. วนศาสตร์": "🌲 วนศาสตร์",
-  "9. ไม่รู้จะเรียนที่ไหนดี": "❓ ไม่ระบุ"
+  "1. วิทยาศาสตร์สุขภาพ": "สุขภาพ",
+  "2. วิศวกรรมศาสตร์": "วิศวะ",
+  "3. ศึกษาศาสตร์/ครุศาสตร์": "ครุศาสตร์",
+  "4. วิทยาการและการจัดการ": "จัดการ",
+  "5. ศิลปกรรมศาสตร์": "ศิลปกรรม",
+  "6. มนุษยศาสตร์และสังคมศาสตร์": "มนุษย์-สังคม",
+  "7. รัฐศาสตร์และนิติศาสตร์": "นิติ-รัฐ",
+  "8. วนศาสตร์": "วนศาสตร์",
+  "9. ไม่รู้จะเรียนที่ไหนดี": "ไม่ระบุ"
 };
 
 const majorColors = {
@@ -854,7 +854,7 @@ export default function MasterAdmin() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <GraduationCap size={28} color="#1d4ed8" />
                 <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#1e293b', margin: 0, fontFamily: "'Kanit', sans-serif" }}>
-                  📊 ตารางวิเคราะห์อันดับตัวเลือก (สถิติก่อนการจัดสรรรอบคณะ)
+                  ตารางวิเคราะห์อันดับตัวเลือก (สถิติก่อนการจัดสรรรอบคณะ)
                 </h3>
               </div>
               <button 
@@ -973,7 +973,7 @@ export default function MasterAdmin() {
                   gap: '0.5rem'
                 }}
               >
-                <GraduationCap size={20} /> เริ่มระบบประมวลผลจัดสรร TCAS ทันที 🚀
+                <GraduationCap size={20} /> เริ่มระบบประมวลผลจัดสรร TCAS ทันที
               </button>
             </div>
           </div>
