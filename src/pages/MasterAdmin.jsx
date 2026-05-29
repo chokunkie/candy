@@ -586,7 +586,12 @@ export default function MasterAdmin() {
                         {renderBadge(rank)}
                       </div>
                       <div>
-                        <h2 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e293b', margin: 0, fontFamily: "'Kanit', sans-serif", lineHeight: '1.2' }}>
+                        <h2 
+                          onClick={() => setSelectedTeamForModal(t.name)}
+                          onMouseEnter={e => { e.currentTarget.style.color = '#ff2e93'; e.currentTarget.style.textDecoration = 'underline'; }}
+                          onMouseLeave={e => { e.currentTarget.style.color = '#1e293b'; e.currentTarget.style.textDecoration = 'none'; }}
+                          style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e293b', margin: 0, fontFamily: "'Kanit', sans-serif", lineHeight: '1.2', cursor: 'pointer', transition: 'color 0.2s' }}
+                        >
                           {t.name}
                         </h2>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginTop: '0.15rem' }}>
@@ -594,18 +599,25 @@ export default function MasterAdmin() {
                             ID: {t.id}
                           </span>
                           {tStat && (
-                            <span style={{
-                              background: tStat.submitted === tStat.total ? '#dcfce7' : '#f1f5f9',
-                              color: tStat.submitted === tStat.total ? '#15803d' : '#475569',
-                              border: '1.5px solid #1e293b',
-                              fontSize: '0.68rem',
-                              fontWeight: 800,
-                              padding: '0.15rem 0.45rem',
-                              borderRadius: '6px',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '0.2rem'
-                            }}>
+                            <span 
+                              onClick={() => setSelectedTeamForModal(t.name)}
+                              onMouseEnter={e => { e.currentTarget.style.borderColor = '#ff2e93'; e.currentTarget.style.background = '#fff0f6'; }}
+                              onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e293b'; e.currentTarget.style.background = tStat.submitted === tStat.total ? '#dcfce7' : '#f1f5f9'; }}
+                              style={{
+                                background: tStat.submitted === tStat.total ? '#dcfce7' : '#f1f5f9',
+                                color: tStat.submitted === tStat.total ? '#15803d' : '#475569',
+                                border: '1.5px solid #1e293b',
+                                fontSize: '0.68rem',
+                                fontWeight: 800,
+                                padding: '0.15rem 0.45rem',
+                                borderRadius: '6px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.2rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                              }}
+                            >
                               {tStat.submitted} คน
                             </span>
                           )}
@@ -705,10 +717,15 @@ export default function MasterAdmin() {
                       </div>
 
                       <div>
-                        <h2 style={{
-                          fontSize: '1.25rem', fontWeight: 900, color: '#1e293b',
-                          margin: 0, fontFamily: "'Kanit', sans-serif"
-                        }}>
+                        <h2 
+                          onClick={() => setSelectedTeamForModal(t.name)}
+                          onMouseEnter={e => { e.currentTarget.style.color = '#ff2e93'; e.currentTarget.style.textDecoration = 'underline'; }}
+                          onMouseLeave={e => { e.currentTarget.style.color = '#1e293b'; e.currentTarget.style.textDecoration = 'none'; }}
+                          style={{
+                            fontSize: '1.25rem', fontWeight: 900, color: '#1e293b',
+                            margin: 0, fontFamily: "'Kanit', sans-serif", cursor: 'pointer', transition: 'color 0.2s'
+                          }}
+                        >
                           {t.name}
                         </h2>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginTop: '0.15rem' }}>
@@ -716,18 +733,25 @@ export default function MasterAdmin() {
                             ID: {t.id}
                           </span>
                           {tStat && (
-                            <span style={{
-                              background: tStat.submitted === tStat.total ? '#dcfce7' : '#f1f5f9',
-                              color: tStat.submitted === tStat.total ? '#15803d' : '#475569',
-                              border: '1.5px solid #1e293b',
-                              fontSize: '0.68rem',
-                              fontWeight: 800,
-                              padding: '0.15rem 0.45rem',
-                              borderRadius: '6px',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '0.2rem'
-                            }}>
+                            <span 
+                              onClick={() => setSelectedTeamForModal(t.name)}
+                              onMouseEnter={e => { e.currentTarget.style.borderColor = '#ff2e93'; e.currentTarget.style.background = '#fff0f6'; }}
+                              onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e293b'; e.currentTarget.style.background = tStat.submitted === tStat.total ? '#dcfce7' : '#f1f5f9'; }}
+                              style={{
+                                background: tStat.submitted === tStat.total ? '#dcfce7' : '#f1f5f9',
+                                color: tStat.submitted === tStat.total ? '#15803d' : '#475569',
+                                border: '1.5px solid #1e293b',
+                                fontSize: '0.68rem',
+                                fontWeight: 800,
+                                padding: '0.15rem 0.45rem',
+                                borderRadius: '6px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.2rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                              }}
+                            >
                               {tStat.submitted} คน
                             </span>
                           )}
