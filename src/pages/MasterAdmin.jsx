@@ -478,19 +478,70 @@ export default function MasterAdmin() {
         </div>
       </div>
 
-      <div className="text-center" style={{ marginBottom: '1rem' }}>
-        <h1 style={{
-          fontFamily: "'Kanit', sans-serif", fontWeight: 900, fontSize: '2rem',
-          color: '#1e293b', letterSpacing: '2px', margin: 0, lineHeight: '1.1',
-          textTransform: 'uppercase'
-        }}>
-          LEADERBOARD
-        </h1>
-        <p style={{ fontFamily: "'Kanit', sans-serif", color: '#64748b', fontWeight: 600, fontSize: '0.82rem', margin: '0.3rem 0 0' }}>
-          {hideScores
-            ? `บันทึกล่าสุดก่อนปิด: ${frozenTime} น. — คะแนนถูกซ่อนอยู่`
-            : 'อัปเดตแบบเรียลไทม์'}
-        </p>
+      <div style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '1rem',
+        width: '100%',
+        maxWidth: '860px',
+        margin: '0 auto 1.5rem',
+      }}>
+        {/* Title & subtitle */}
+        <div style={{ flex: 1, minWidth: '240px' }}>
+          <h1 style={{
+            fontFamily: "'Kanit', sans-serif", fontWeight: 900, fontSize: '2.2rem',
+            color: '#1e293b', letterSpacing: '2px', margin: 0, lineHeight: '1.1',
+            textTransform: 'uppercase'
+          }}>
+            LEADERBOARD
+          </h1>
+          <p style={{ fontFamily: "'Kanit', sans-serif", color: '#64748b', fontWeight: 600, fontSize: '0.82rem', margin: '0.3rem 0 0' }}>
+            {hideScores
+              ? `บันทึกล่าสุดก่อนปิด: ${frozenTime} น. — คะแนนถูกซ่อนอยู่`
+              : 'อัปเดตแบบเรียลไทม์'}
+          </p>
+        </div>
+
+        {/* Overall TCAS progress box on the right */}
+        {tcasStats && (
+          <div style={{
+            background: '#ffffff',
+            border: '3px solid #1e293b',
+            borderRadius: '16px',
+            boxShadow: '4px 4px 0px #1e293b',
+            padding: '0.7rem 1.2rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            minWidth: '260px',
+            background: '#fef9c3' // yellow background matching leaderboard rank #1
+          }}>
+            <GraduationCap size={28} color="#ff2e93" />
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', fontFamily: "'Kanit', sans-serif", textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                ความคืบหน้าการส่ง TCAS
+              </span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.2rem' }}>
+                <span style={{ fontSize: '1.8rem', fontWeight: 950, color: '#ff2e93', fontFamily: "'Kanit', sans-serif", lineHeight: 1 }}>
+                  {tcasStats.submitted}
+                </span>
+                <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b', fontFamily: "'Kanit', sans-serif" }}>
+                  / 166 คน
+                </span>
+              </div>
+              {/* Mini progress bar */}
+              <div style={{ width: '100%', height: '6px', background: '#cbd5e1', borderRadius: '999px', border: '1.5px solid #1e293b', overflow: 'hidden', marginTop: '0.2rem' }}>
+                <div style={{
+                  width: `${Math.min(100, Math.round((tcasStats.submitted / 166) * 100))}%`,
+                  height: '100%',
+                  background: 'linear-gradient(90deg, #3b82f6, #ff2e93)',
+                }} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ════════════════════════════════════════════════════════════════════ */}
@@ -548,7 +599,7 @@ export default function MasterAdmin() {
                               alignItems: 'center',
                               gap: '0.2rem'
                             }}>
-                              {tStat.submitted === tStat.total ? '✅' : '📝'} TCAS: {tStat.submitted}/{tStat.total} คน
+                              {tStat.submitted === tStat.total ? '✅' : '📝'} TCAS: {tStat.submitted} คน
                             </span>
                           )}
                         </div>
@@ -670,7 +721,7 @@ export default function MasterAdmin() {
                               alignItems: 'center',
                               gap: '0.2rem'
                             }}>
-                              {tStat.submitted === tStat.total ? '✅' : '📝'} TCAS: {tStat.submitted}/{tStat.total} คน
+                              {tStat.submitted === tStat.total ? '✅' : '📝'} TCAS: {tStat.submitted} คน
                             </span>
                           )}
                         </div>
