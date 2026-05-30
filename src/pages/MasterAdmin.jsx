@@ -959,19 +959,19 @@ export default function MasterAdmin() {
             </p>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', background: '#1e293b', color: 'white', padding: '0.5rem 0.8rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.8rem' }}>
+              <div style={{ display: 'flex', background: '#1e293b', color: 'white', padding: '0.5rem 0.8rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.75rem', alignItems: 'center' }}>
                 <span style={{ flex: 1 }}>สาขา/คณะ</span>
-                <span style={{ width: '50px', textAlign: 'center' }}>รอบ 1</span>
-                <span style={{ width: '50px', textAlign: 'center' }}>รอบ 2</span>
-                <span style={{ width: '50px', textAlign: 'center' }}>รอบ 3</span>
+                <span style={{ width: '65px', textAlign: 'center', lineHeight: 1.1 }}>รอบ 1<br/><span style={{ fontSize: '0.55rem', opacity: 0.8 }}>09:30-10:05</span></span>
+                <span style={{ width: '65px', textAlign: 'center', lineHeight: 1.1 }}>รอบ 2<br/><span style={{ fontSize: '0.55rem', opacity: 0.8 }}>10:15-11:00</span></span>
+                <span style={{ width: '65px', textAlign: 'center', lineHeight: 1.1 }}>รอบ 3<br/><span style={{ fontSize: '0.55rem', opacity: 0.8 }}>11:15-12:00</span></span>
                 <span style={{ width: '60px', textAlign: 'center' }}>รวม</span>
               </div>
               {summaryData.stats.map((stat, idx) => (
-                <div key={idx} style={{ display: 'flex', padding: '0.5rem 0.8rem', borderBottom: '1px solid #f1f5f9', fontSize: '0.88rem', fontWeight: 700 }}>
+                <div key={idx} style={{ display: 'flex', padding: '0.5rem 0.8rem', borderBottom: '1px solid #f1f5f9', fontSize: '0.88rem', fontWeight: 700, alignItems: 'center' }}>
                   <span style={{ flex: 1, color: '#1e293b' }}>{stat.name}</span>
-                  <span style={{ width: '50px', textAlign: 'center', color: '#64748b' }}>{stat.r1}</span>
-                  <span style={{ width: '50px', textAlign: 'center', color: '#64748b' }}>{stat.r2}</span>
-                  <span style={{ width: '50px', textAlign: 'center', color: '#64748b' }}>{stat.r3}</span>
+                  <span style={{ width: '65px', textAlign: 'center', color: '#64748b' }}>{stat.r1}</span>
+                  <span style={{ width: '65px', textAlign: 'center', color: '#64748b' }}>{stat.r2}</span>
+                  <span style={{ width: '65px', textAlign: 'center', color: '#64748b' }}>{stat.r3}</span>
                   <span style={{ width: '60px', textAlign: 'center', color: '#ff2e93', fontWeight: 900 }}>{stat.total}</span>
                 </div>
               ))}

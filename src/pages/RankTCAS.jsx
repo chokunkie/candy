@@ -607,8 +607,13 @@ export default function RankTCAS() {
                       }}
                     >
                       <div>
-                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-pink)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                          รอบที่ {item.round}
+                        <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--accent-pink)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                          <span>รอบที่ {item.round}</span>
+                          <span style={{ color: 'var(--text-sub)' }}>
+                            {item.round === 1 ? '(09:30 - 10:05 น.)' :
+                             item.round === 2 ? '(10:15 - 11:00 น.)' :
+                             '(11:15 - 12:00 น.)'}
+                          </span>
                         </div>
                         <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--text-main)', marginTop: '0.2rem' }}>
                           {isAssigned ? (
