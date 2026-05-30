@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import confetti from 'canvas-confetti';
-import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen, GraduationCap, Database, Trash2, Heart, MessageSquare, QrCode, X } from 'lucide-react';
+import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen, GraduationCap, Database, Trash2, Heart, MessageSquare, QrCode, X, AlertTriangle } from 'lucide-react';
 
 const majorShortnames = {
   "วิทยาศาสตร์สุขภาพ": "สุขภาพ",
@@ -607,6 +607,18 @@ export default function MasterAdmin() {
             }}
           >
             <BookOpen size={13} /> วิธีการเล่น
+          </button>
+          <button
+            onClick={() => navigate('/crisis-slides')}
+            style={{
+              background: '#f59e0b', color: '#fff',
+              border: '1.5px solid #000', padding: '0.3rem 0.7rem', borderRadius: '8px',
+              fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '0.3rem',
+              boxShadow: '2px 2px 0px #000', transition: 'all 0.1s'
+            }}
+          >
+            <AlertTriangle size={13} /> สไลด์กิจกรรมวิกฤต
           </button>
           <button
             onClick={() => setShowFeedbackQR(true)}

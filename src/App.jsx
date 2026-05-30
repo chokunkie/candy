@@ -9,6 +9,8 @@ import Reveal from './pages/Reveal';
 import HowToPlay from './pages/HowToPlay';
 import RankTCAS from './pages/RankTCAS';
 import Feedback from './pages/Feedback';
+import CrisisSlides from './pages/CrisisSlides';
+import CrisisInfo from './pages/CrisisInfo';
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
         <Route path="/how-to-play" element={<div className="container"><HowToPlay /></div>} />
         <Route path="/ranktcas" element={<RankTCAS />} />
         <Route path="/feedback" element={<div className="container"><Feedback /></div>} />
+        <Route path="/crisis-slides" element={<div className="container container-large"><CrisisSlides /></div>} />
+        <Route path="/crisis-info" element={<div className="container"><CrisisInfo /></div>} />
       </Routes>
     </BrowserRouter>
   );
