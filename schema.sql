@@ -85,11 +85,8 @@ CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON public.transactions(cr
 -- 10. Create Feedback Table for camp feelings
 CREATE TABLE IF NOT EXISTS public.feedback (
   id TEXT PRIMARY KEY,
-  team_id TEXT NOT NULL REFERENCES public.teams(id),
-  pros TEXT NOT NULL,
-  cons TEXT NOT NULL,
-  gained TEXT NOT NULL,
-  message_to_staff TEXT NOT NULL,
+  student_name TEXT NOT NULL,
+  message TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

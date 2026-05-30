@@ -184,7 +184,7 @@ export default function MasterAdmin() {
   const [adjustAmount, setAdjustAmount] = useState('');
 
   // Feedback states
-  const [submittedTeamIds, setSubmittedTeamIds] = useState(new Set());
+  const [feedbackCount, setFeedbackCount] = useState(0);
   const [toasts, setToasts] = useState([]);
   const [showFeedbackQR, setShowFeedbackQR] = useState(false);
 
@@ -360,24 +360,12 @@ export default function MasterAdmin() {
       .channel('master:feedback')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'feedback' }, async (payload) => {
         const newFb = payload.new;
+        const studentName = newFb.student_name || 'ผู้ไม่ประสงค์ออกนาม';
 
-        // 1. Fetch team name
-        const { data: teamData } = await supabase
-          .from('teams')
-          .select('name')
-          .eq('id', newFb.team_id)
-          .single();
+        // 1. Update submitted state count
+        setFeedbackCount(prev => prev + 1);
 
-        const teamName = teamData ? teamData.name : `กลุ่มรหัส ${newFb.team_id}`;
-
-        // 2. Update submitted state
-        setSubmittedTeamIds(prev => {
-          const next = new Set(prev);
-          next.add(newFb.team_id);
-          return next;
-        });
-
-        // 3. Confetti burst
+        // 2. Confetti burst
         const duration = 3 * 1000;
         const end = Date.now() + duration;
 
@@ -401,11 +389,11 @@ export default function MasterAdmin() {
         };
         frame();
 
-        // 4. Toast notification
+        // 3. Toast notification
         const toastId = Date.now() + Math.random().toString(36).substr(2, 9);
         const newToast = {
           id: toastId,
-          message: `มีข้อความความรู้สึกจาก ${teamName} ส่งเข้ามาแล้ว!`
+          message: `มีข้อความความรู้สึกจาก คุณ ${studentName} ส่งเข้ามาแล้ว!`
         };
         setToasts(prev => [...prev, newToast]);
 
@@ -473,9 +461,9 @@ export default function MasterAdmin() {
       // 1.5 Load existing feedbacks to populate submitted count
       const { data: existingFeedbacks } = await supabase
         .from('feedback')
-        .select('team_id');
+        .select('id');
       if (existingFeedbacks) {
-        setSubmittedTeamIds(new Set(existingFeedbacks.map(fb => fb.team_id)));
+        setFeedbackCount(existingFeedbacks.length);
       }
 
       // 2. Load settings
@@ -630,7 +618,7 @@ export default function MasterAdmin() {
               boxShadow: '2px 2px 0px #000', transition: 'all 0.1s'
             }}
           >
-            <Heart size={13} fill="#fff" /> ฟอร์มความรู้สึก ({submittedTeamIds.size}/10)
+            <Heart size={13} fill="#fff" /> ฟอร์มความรู้สึก ({feedbackCount} ข้อความ)
           </button>
           <button
             onClick={toggleHideScore}
@@ -1406,7 +1394,7 @@ export default function MasterAdmin() {
                 <MessageSquare size={16} /> ยอดส่งเรียลไทม์
               </div>
               <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#fff' }}>
-                <span style={{ color: '#ff2e93' }}>{submittedTeamIds.size}</span> / 10 กลุ่ม
+                <span style={{ color: '#ff2e93' }}>{feedbackCount}</span> ข้อความ
               </div>
             </div>
           </div>
