@@ -8,6 +8,7 @@ import MasterAdmin from './pages/MasterAdmin';
 import Reveal from './pages/Reveal';
 import HowToPlay from './pages/HowToPlay';
 import RankTCAS from './pages/RankTCAS';
+import Feedback from './pages/Feedback';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/reveal" element={<Reveal />} />
         <Route path="/how-to-play" element={<div className="container"><HowToPlay /></div>} />
         <Route path="/ranktcas" element={<RankTCAS />} />
+        <Route path="/feedback" element={<div className="container"><Feedback /></div>} />
       </Routes>
     </BrowserRouter>
   );

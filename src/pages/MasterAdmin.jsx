@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen, GraduationCap, Database, Trash2 } from 'lucide-react';
+import confetti from 'canvas-confetti';
+import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen, GraduationCap, Database, Trash2, Heart, MessageSquare, QrCode, X } from 'lucide-react';
 
 const majorShortnames = {
   "วิทยาศาสตร์สุขภาพ": "สุขภาพ",
@@ -182,6 +183,11 @@ export default function MasterAdmin() {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [adjustAmount, setAdjustAmount] = useState('');
 
+  // Feedback states
+  const [submittedTeamIds, setSubmittedTeamIds] = useState(new Set());
+  const [toasts, setToasts] = useState([]);
+  const [showFeedbackQR, setShowFeedbackQR] = useState(false);
+
   const navigate = useNavigate();
 
   const runTCASAllocation = async () => {
@@ -344,6 +350,81 @@ export default function MasterAdmin() {
     }
   };
   const realtimeChannelRef = useRef(null);
+  const feedbackChannelRef = useRef(null);
+
+  // ─── Subscribe to realtime feedback updates ───────────────────────────────────
+  const subscribeFeedback = useCallback(() => {
+    if (feedbackChannelRef.current) return;
+
+    const ch = supabase
+      .channel('master:feedback')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'feedback' }, async (payload) => {
+        const newFb = payload.new;
+
+        // 1. Fetch team name
+        const { data: teamData } = await supabase
+          .from('teams')
+          .select('name')
+          .eq('id', newFb.team_id)
+          .single();
+
+        const teamName = teamData ? teamData.name : `กลุ่มรหัส ${newFb.team_id}`;
+
+        // 2. Update submitted state
+        setSubmittedTeamIds(prev => {
+          const next = new Set(prev);
+          next.add(newFb.team_id);
+          return next;
+        });
+
+        // 3. Confetti burst
+        const duration = 3 * 1000;
+        const end = Date.now() + duration;
+
+        const frame = () => {
+          confetti({
+            particleCount: 5,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+          });
+          confetti({
+            particleCount: 5,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+          });
+
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+        };
+        frame();
+
+        // 4. Toast notification
+        const toastId = Date.now() + Math.random().toString(36).substr(2, 9);
+        const newToast = {
+          id: toastId,
+          message: `มีข้อความความรู้สึกจาก ${teamName} ส่งเข้ามาแล้ว!`
+        };
+        setToasts(prev => [...prev, newToast]);
+
+        // Auto remove toast
+        setTimeout(() => {
+          setToasts(prev => prev.filter(t => t.id !== toastId));
+        }, 6000);
+      })
+      .subscribe();
+
+    feedbackChannelRef.current = ch;
+  }, []);
+
+  const unsubscribeFeedback = useCallback(() => {
+    if (feedbackChannelRef.current) {
+      supabase.removeChannel(feedbackChannelRef.current);
+      feedbackChannelRef.current = null;
+    }
+  }, []);
 
   // ─── Subscribe to realtime team updates ───────────────────────────────────
   const subscribeRealtime = useCallback(() => {
@@ -389,6 +470,14 @@ export default function MasterAdmin() {
       await fetchTeams();
       await fetchTCASStats();
 
+      // 1.5 Load existing feedbacks to populate submitted count
+      const { data: existingFeedbacks } = await supabase
+        .from('feedback')
+        .select('team_id');
+      if (existingFeedbacks) {
+        setSubmittedTeamIds(new Set(existingFeedbacks.map(fb => fb.team_id)));
+      }
+
       // 2. Load settings
       const { data: settingsData } = await supabase
         .from('settings')
@@ -404,12 +493,18 @@ export default function MasterAdmin() {
         subscribeRealtime();
       }
 
+      // Subscribe to feedback realtime (always active)
+      subscribeFeedback();
+
       setLoading(false);
     };
 
     init();
 
-    return () => unsubscribeRealtime();
+    return () => {
+      unsubscribeRealtime();
+      unsubscribeFeedback();
+    };
   }, []);
 
   // ─── Toggle hide / show scores ────────────────────────────────────────────
@@ -524,6 +619,18 @@ export default function MasterAdmin() {
             }}
           >
             <BookOpen size={13} /> วิธีการเล่น
+          </button>
+          <button
+            onClick={() => setShowFeedbackQR(true)}
+            style={{
+              background: '#ff2e93', color: '#fff',
+              border: '1.5px solid #000', padding: '0.3rem 0.7rem', borderRadius: '8px',
+              fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '0.3rem',
+              boxShadow: '2px 2px 0px #000', transition: 'all 0.1s'
+            }}
+          >
+            <Heart size={13} fill="#fff" /> ฟอร์มความรู้สึก ({submittedTeamIds.size}/10)
           </button>
           <button
             onClick={toggleHideScore}
@@ -1179,11 +1286,149 @@ export default function MasterAdmin() {
         </div>
       )}
 
+      {/* ── Toast notifications ───────────────────────────────────────────── */}
+      <div style={{
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        zIndex: 9999,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+        pointerEvents: 'none'
+      }}>
+        {toasts.map(t => (
+          <div key={t.id} style={{
+            background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+            color: '#fff',
+            border: '2.5px solid #ff2e93',
+            boxShadow: '0 8px 30px rgba(255, 46, 147, 0.25), 4px 4px 0px #000',
+            padding: '1rem 1.2rem',
+            borderRadius: '16px',
+            minWidth: '280px',
+            maxWidth: '350px',
+            fontFamily: "'Kanit', sans-serif",
+            fontWeight: 800,
+            fontSize: '0.9rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.8rem',
+            pointerEvents: 'auto',
+            animation: 'toastIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) both'
+          }}>
+            <div style={{
+              background: 'rgba(255, 46, 147, 0.15)',
+              borderRadius: '50%',
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              <Heart size={16} color="#ff2e93" fill="#ff2e93" />
+            </div>
+            <div style={{ flex: 1 }}>{t.message}</div>
+            <button
+              onClick={() => setToasts(prev => prev.filter(item => item.id !== t.id))}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#94a3b8',
+                cursor: 'pointer',
+                padding: '0.2rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'color 0.2s'
+              }}
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Feedback QR Code Modal ────────────────────────────────────────── */}
+      {showFeedbackQR && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          background: 'rgba(15, 23, 42, 0.85)', display: 'flex', alignItems: 'center',
+          justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(8px)',
+          fontFamily: "'Kanit', sans-serif"
+        }}>
+          <div className="glass-card" style={{
+            width: '90%', maxWidth: '500px', background: '#1e293b',
+            border: '4px solid #ff2e93', boxShadow: '12px 12px 0px #000',
+            textAlign: 'center', padding: '2rem 1.5rem', color: '#fff',
+            position: 'relative', animation: 'toastIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) both'
+          }}>
+            <button
+              onClick={() => setShowFeedbackQR(false)}
+              style={{
+                position: 'absolute', top: '15px', right: '15px',
+                background: 'rgba(255,255,255,0.1)', border: '2.5px solid #000',
+                color: '#fff', borderRadius: '50%', width: '32px', height: '32px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', transition: 'all 0.1s'
+              }}
+            >
+              <X size={18} />
+            </button>
+
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center', marginBottom: '0.8rem' }}>
+              <Heart size={28} color="#ff2e93" fill="#ff2e93" style={{ animation: 'float 2s ease-in-out infinite' }} />
+              <h2 style={{ fontSize: '1.6rem', fontWeight: 900, textShadow: '2px 2px 0px #000' }}>แบบฟอร์มส่งความรู้สึกค่าย</h2>
+            </div>
+            
+            <p style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: 600, marginBottom: '1.5rem' }}>
+              สแกน QR Code เพื่อบอกสิ่งดีๆ สิ่งที่ได้รับ และข้อคิดเห็นให้พี่ๆ ทีมงานค่ายชื่นใจกันนะ!
+            </p>
+
+            <div style={{
+              background: '#fff', padding: '1rem', borderRadius: '16px',
+              display: 'inline-block', border: '3px solid #000',
+              boxShadow: '5px 5px 0px #000', marginBottom: '1.5rem'
+            }}>
+              <img
+                src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://candy-fawn-chi.vercel.app/feedback"
+                alt="Feedback QR Code"
+                style={{ width: '260px', height: '260px', display: 'block' }}
+              />
+            </div>
+
+            <div style={{
+              background: '#0f172a', padding: '0.8rem 1.2rem', borderRadius: '12px',
+              border: '2px solid #334155', display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', width: '100%'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#ff2e93', fontWeight: 800, fontSize: '0.95rem' }}>
+                <MessageSquare size={16} /> ยอดส่งเรียลไทม์
+              </div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#fff' }}>
+                <span style={{ color: '#ff2e93' }}>{submittedTeamIds.size}</span> / 10 กลุ่ม
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Global keyframes ──────────────────────────────────────────────── */}
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0); }
           50%       { transform: translateY(-8px); }
+        }
+
+        @keyframes toastIn {
+          from {
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
         }
 
         @keyframes slideInRow {

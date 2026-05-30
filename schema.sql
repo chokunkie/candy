@@ -81,3 +81,17 @@ CREATE POLICY "Allow all" ON public.settings FOR ALL USING (true) WITH CHECK (tr
 CREATE INDEX IF NOT EXISTS idx_transactions_team_id ON public.transactions(team_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_station_id ON public.transactions(station_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON public.transactions(created_at DESC);
+
+-- 10. Create Feedback Table for camp feelings
+CREATE TABLE IF NOT EXISTS public.feedback (
+  id TEXT PRIMARY KEY,
+  team_id TEXT NOT NULL REFERENCES public.teams(id),
+  pros TEXT NOT NULL,
+  cons TEXT NOT NULL,
+  gained TEXT NOT NULL,
+  message_to_staff TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.feedback ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all" ON public.feedback FOR ALL USING (true) WITH CHECK (true);
