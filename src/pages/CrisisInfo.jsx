@@ -6,7 +6,7 @@ export default function CrisisInfo() {
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState(null);
 
-  // ข้อมูล 15 สถานการณ์
+  // ข้อมูล 14 สถานการณ์หลัก
   const scenarios = [
     {
       id: 1,
@@ -119,51 +119,72 @@ export default function CrisisInfo() {
       </div>
 
       {/* NEW Example Scenario 15 */}
-      <div className="glass-card" style={{ padding: '1.8rem 1.5rem', marginBottom: '1.5rem', border: '2.5px solid var(--accent-pink)', boxShadow: '0 8px 25px rgba(255,46,147,0.15)' }}>
+      <div className="glass-card" style={{ padding: '2rem 1.5rem', marginBottom: '1.5rem', border: '2.5px solid var(--accent-pink)', boxShadow: '0 8px 25px rgba(255,46,147,0.15)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.8rem' }}>
           <AlertTriangle size={24} color="var(--accent-pink)" />
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: 'white' }}>กรณีตัวอย่างที่ 15: วิกฤตเพลิงไหม้อาคารสูง</h3>
+          <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: 'white' }}>กรณีตัวอย่างที่ 15 (แนวทางการเขียนอย่างละเอียด): วิกฤตเพลิงไหม้อาคารสูง</h3>
         </div>
-        <p style={{ color: 'var(--text-sub)', fontSize: '0.9rem', fontWeight: 600, marginBottom: '1.2rem', lineHeight: '1.6' }}>
-          ตัวอย่างแผนการแบ่งงานของสมาชิก 16 คนในกลุ่ม เพื่อเอาตัวรอดจากไฟไหม้ชั้น 4 และควันพิษอัดแน่นในทางเดินหลัก
-        </p>
+        
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '2.5px solid #334155', borderRadius: '14px', padding: '1rem', marginBottom: '1.5rem' }}>
+          <h4 style={{ fontSize: '0.95rem', fontWeight: 900, color: '#f472b6', marginBottom: '0.4rem' }}>รายละเอียดสถานการณ์วิกฤตสมมติ</h4>
+          <p style={{ color: 'var(--text-sub)', fontSize: '0.85rem', fontWeight: 600, lineHeight: '1.7' }}>
+            เกิดเหตุไฟฟ้าลัดวงจรบริเวณห้องวิจัยสารเคมีชั้น 4 ของตึกเรียน เปลวไฟโหมไหม้ตู้เก็บสารทำละลายส่งผลให้ควันพิษหนาทึบสีดำเขม่าหนืดพวยพุ่งและลอยขึ้นปิดกั้นโถงทางเดินหลักและบันไดหลักทั้งหมดอย่างรวดเร็ว ระบบพัดลมดูดระบายอากาศขัดข้อง สปริงเกอร์ไม่ทำงาน มีกลุ่มผู้ประสบภัยติดค้างอยู่ที่บริเวณชั้น 6 และเริ่มมีอาการสำลักควัน ตื่นตระหนก วิ่งสับสนอย่างไร้ทิศทาง
+          </p>
+        </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+        <h4 style={{ fontSize: '1.05rem', fontWeight: 900, color: 'white', marginBottom: '1rem' }}>พิมพ์เขียวตัวอย่างแผนงานแบ่งหน้าที่สมาชิก 16 คน (ทีมละ 4 คน):</h4>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
           
-          <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1.5px solid #3b82f6', borderRadius: '12px', padding: '1rem' }}>
-            <h4 style={{ fontWeight: 900, color: '#60a5fa', fontSize: '0.95rem', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <Shield size={16} /> 1. ทีมกู้ชีพและการแพทย์ (4 คน)
-            </h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-sub)', fontWeight: 600, lineHeight: '1.4' }}>
-              จัดเตรียมการปฐมพยาบาลเบื้องต้น รวบรวมผ้าชุบน้ำสำหรับปิดจมูก และดูแลประคองเพื่อนที่ตื่นตระหนกอย่างใกล้ชิด
-            </p>
+          <div style={{ background: 'rgba(59, 130, 246, 0.08)', border: '2px solid #3b82f6', borderRadius: '16px', padding: '1.2rem' }}>
+            <h5 style={{ fontWeight: 900, color: '#60a5fa', fontSize: '1rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Shield size={18} /> 1. ทีมแพทย์สนามและกู้ชีพฉุกเฉิน (First Aid & Triage - 4 คน)
+            </h5>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-sub)', fontWeight: 600, lineHeight: '1.6', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <p>• <b>หน้าที่หลัก:</b> รักษาชีวิต คัดแยกผู้ป่วย และสร้างความปลอดภัยทางกายภาพชั่วคราว</p>
+              <p>• <b>ขั้นตอนปฏิบัติงาน:</b></p>
+              <p style={{ paddingLeft: '0.8rem' }}>1. ค้นหาและรวบรวมขวดน้ำดื่มและผ้าสะอาดในบริเวณชั้นมาทำความสะอาด ชุบน้ำให้เปียกพอหมาด แจกจ่ายเพื่อใช้เป็นเครื่องกรองควันปิดปากและจมูกฉุกเฉิน</p>
+              <p style={{ paddingLeft: '0.8rem' }}>2. จัดตั้งจุดปลอดภัยชั่วคราว (Safe Zone) ในห้องปิดฝั่งตะวันออกที่ควันยังเข้าไม่ถึง ใช้ผ้าชุบน้ำอุดตามซอกใต้ประตูเพื่อบล็อคควันพิษไม่ให้เล็ดลอด</p>
+              <p style={{ paddingLeft: '0.8rem' }}>3. เข้าควบคุมและปฐมพยาบาลเบื้องต้นแก่เพื่อนที่เริ่มสำลักควันหรือสำลักเขม่าไฟ คอยปลอบประโลมและใช้ทักษะจิตวิทยาป้องกันการเกิดความตระหนก (Anti-Panic) เพื่อไม่ให้วิ่งหนีชนกันจนล้มเหยียบ</p>
+            </div>
           </div>
 
-          <div style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1.5px solid #22c55e', borderRadius: '12px', padding: '1rem' }}>
-            <h4 style={{ fontWeight: 900, color: '#4ade80', fontSize: '0.95rem', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <Map size={16} /> 2. ทีมสำรวจทางหนีและตรวจสอบภัย (4 คน)
-            </h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-sub)', fontWeight: 600, lineHeight: '1.4' }}>
-              ตรวจสอบความร้อนของบานประตูก่อนเปิด เคลียร์ทางเดิน และใช้บันไดหนีไฟฝั่งตะวันออกที่ควันยังพัดเข้าไปไม่ถึง
-            </p>
+          <div style={{ background: 'rgba(34, 197, 94, 0.08)', border: '2px solid #22c55e', borderRadius: '16px', padding: '1.2rem' }}>
+            <h5 style={{ fontWeight: 900, color: '#4ade80', fontSize: '1rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Map size={18} /> 2. ทีมสำรวจ เส้นทางหนีไฟ และประเมินภัยพิบัติ (Route Assessment - 4 คน)
+            </h5>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-sub)', fontWeight: 600, lineHeight: '1.6', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <p>• <b>หน้าที่หลัก:</b> ค้นหาและเคลียร์ทางเดินหนีไฟ ตรวจจับสิ่งกีดขวาง และนำทิศทางลม</p>
+              <p>• <b>ขั้นตอนปฏิบัติงาน:</b></p>
+              <p style={{ paddingLeft: '0.8rem' }}>1. สำรวจเส้นทางหนีไฟสำรองภายนอกตึก หรือบันไดหนีไฟฝั่งตรงข้ามลมพัด หลีกเลี่ยงโถงบันไดหลักที่มีระดับควันดำหนาแน่นมากที่สุด</p>
+              <p style={{ paddingLeft: '0.8rem' }}>2. ใช้หลังมือสัมผัสบานประตูและลูกบิดโลหะทุกบานก่อนเปิดเพื่อตรวจสอบความร้อน หากร้อนจัดแสดงว่าด้านหลังมีไฟโหม ห้ามเปิดโดยเด็ดขาด</p>
+              <p style={{ paddingLeft: '0.8rem' }}>3. นำทางสมาชิกทุกคนเคลื่อนย้ายหลบหนีด้วยวิธีการ "ก้มตัวต่ำขนานไปกับพื้น (Crawl)" ให้ระดับใบหน้าสูงไม่เกิน 30 เซนติเมตรจากระดับพื้น เนื่องจากออกซิเจนจะลอยอยู่ต่ำสุด ส่วนควันพิษคาร์บอนมอนอกไซด์จะลอยตัวสะสมอยู่ระดับด้านบน</p>
+            </div>
           </div>
 
-          <div style={{ background: 'rgba(236, 72, 153, 0.1)', border: '1.5px solid #ec4899', borderRadius: '12px', padding: '1rem' }}>
-            <h4 style={{ fontWeight: 900, color: '#f472b6', fontSize: '0.95rem', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <Wrench size={16} /> 3. ทีมนวัตกรรมสร้างสิ่งประดิษฐ์ (4 คน)
-            </h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-sub)', fontWeight: 600, lineHeight: '1.4' }}>
-              ดัดแปลงแผงชิ้นส่วนประกอบทำสะท้อนแสงสำหรับเป็นเครื่องระบุพิกัดชี้เป้าแก่เจ้าหน้าที่กู้ภัยภายนอก
-            </p>
+          <div style={{ background: 'rgba(236, 72, 153, 0.08)', border: '2px solid #ec4899', borderRadius: '16px', padding: '1.2rem' }}>
+            <h5 style={{ fontWeight: 900, color: '#f472b6', fontSize: '1rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Wrench size={18} /> 3. ทีมนวัตกรรมประยุกต์และประดิษฐ์พยุงชีพ (Innovation & Survival Tools - 4 คน)
+            </h5>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-sub)', fontWeight: 600, lineHeight: '1.6', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <p>• <b>หน้าที่หลัก:</b> สร้างสัญญาณระบุตำแหน่ง และดัดแปลงสิ่งของเฉพาะหน้าพยุงชีวิต</p>
+              <p>• <b>ขั้นตอนปฏิบัติงาน:</b></p>
+              <p style={{ paddingLeft: '0.8rem' }}>1. รวบรวมแผ่นกระจกพลาสติกใส แฟลชโทรศัพท์มือถือ หรือวัสดุสะท้อนแสงในห้องเรียนมาดัดแปลงทำเป็นอุปกรณ์ยิงสัญญาณสะท้อนแสงชี้เป้าพิกัดผ่านทางหน้าต่างตึก เพื่อส่งสัญญาณขอความช่วยเหลือฉุกเฉิน (SOS) ให้ทีมนักดับเพลิงและรถกระเช้ากู้ภัยภายนอกสังเกตเห็น</p>
+              <p style={{ paddingLeft: '0.8rem' }}>2. ประดิษฐ์หน้ากากกรองคาร์บอนฉุกเฉินเฉพาะกิจ โดยรวบรวมเศษผงถ่านกัมมันต์จากห้องวิทยาศาสตร์มาบรรจุห่อชั้นในร่วมกับผ้าขนหนูชุบน้ำหนาๆ เพื่อช่วยกรองเขม่าก๊าซพิษเบื้องต้น ยืดระยะเวลาหายใจรอความช่วยเหลือได้เพิ่มขึ้นอีก 10-15 นาที</p>
+            </div>
           </div>
 
-          <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1.5px solid #f59e0b', borderRadius: '12px', padding: '1rem' }}>
-            <h4 style={{ fontWeight: 900, color: '#fbbf24', fontSize: '0.95rem', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <MessageSquare size={16} /> 4. ทีมควบคุมความสงบและการสื่อสาร (4 คน)
-            </h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-sub)', fontWeight: 600, lineHeight: '1.4' }}>
-              จัดระเบียบเดินเรียงเดี่ยวห้ามดันกัน ตะโกนนำทางเป็นจังหวะ และใช้โทรศัพท์ติดต่อส่งอัปเดตข้อมูลพิกัดแก่กู้ภัย
-            </p>
+          <div style={{ background: 'rgba(245, 158, 11, 0.08)', border: '2px solid #f59e0b', borderRadius: '16px', padding: '1.2rem' }}>
+            <h5 style={{ fontWeight: 900, color: '#fbbf24', fontSize: '1rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <MessageSquare size={18} /> 4. ทีมควบคุมระเบียบ การสื่อสาร และประสานงานภายนอก (Crowd & Comms Control - 4 คน)
+            </h5>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-sub)', fontWeight: 600, lineHeight: '1.6', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <p>• <b>หน้าที่หลัก:</b> ประสานสายด่วนแจ้งข้อมูล ควบคุมแถวในการเคลื่อนย้าย และนับยอดคน</p>
+              <p>• <b>ขั้นตอนปฏิบัติงาน:</b></p>
+              <p style={{ paddingLeft: '0.8rem' }}>1. โทรศัพท์ประสานสายด่วนกู้ภัย 199 ทันทีเพื่อแจ้งข้อมูลเชิงเทคนิคที่เป็นประโยชน์ เช่น ยอดจำนวนคน พิกัดชั้นที่ติดค้างอยู่ และจุดเริ่มต้นของไฟปะทุ เพื่อความช่วยเหลือที่รวดเร็ว</p>
+              <p style={{ paddingLeft: '0.8rem' }}>2. จัดระเบียบควบคุมกลุ่มให้เดินหลบหนีเรียงเดี่ยวแถวตอนทีละคนตามสายนำทางอย่างสม่ำเสมอ ห้ามแซง ห้ามวิ่ง และคอยตะโกนส่งสัญญาณคำสั่งหนีอย่างเป็นขั้นเป็นตอน</p>
+              <p style={{ paddingLeft: '0.8rem' }}>3. ทำการตรวจนับยอดคน (Roll Call) และเรียกชื่อสมาชิกทุกคนก่อนเคลื่อนที่ผ่านควันไฟและหลังออกจากห้องหนีไฟ เพื่อป้องกันไม่ให้มีสมาชิกพลัดหลงหรือถูกทิ้งไว้ข้างหลังโดยไม่มีผู้รู้เห็น</p>
+            </div>
           </div>
 
         </div>

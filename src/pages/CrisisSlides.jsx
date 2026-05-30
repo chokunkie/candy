@@ -311,36 +311,36 @@ export default function CrisisSlides() {
         </div>
       )
     },
-    {
+  {
       title: "สถานการณ์ที่ 15 (ตัวอย่างสาธิต)",
       subtitle: "วิกฤตเพลิงไหม้อาคารสูงและระบบระบายควันขัดข้อง",
       color: "#ff2e93",
       bg: "linear-gradient(135deg, rgba(255, 46, 147, 0.08) 0%, rgba(15, 23, 42, 0.2) 100%)",
       content: (
-        <div style={{ paddingLeft: '50px', textAlign: 'left', width: '100%', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+        <div style={{ paddingLeft: '50px', textAlign: 'left', width: '100%', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <div style={{ borderLeft: '5px solid #ff2e93', paddingLeft: '1rem' }}>
-            <h4 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#ff2e93', marginBottom: '0.2rem' }}>กรณีตัวอย่างสำหรับน้อง 16 คนแบ่งงานกันทำ</h4>
-            <p style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1e293b', lineHeight: '1.5' }}>
-              สถานการณ์: เกิดเหตุไฟไหม้ที่ชั้น 4 ของอาคารเรียน ควันหนาทึบลอยอัดแน่นในโถงทางเดินหลักเนื่องจากระบบระบายควันขัดข้อง มีคนติดค้างชั้นบนและเกิดความตื่นตระหนก
+            <h4 style={{ fontSize: '1rem', fontWeight: 900, color: '#ff2e93', marginBottom: '0.2rem' }}>กรณีศึกษา: การแบ่งบทบาทหน้าที่ของสมาชิกกลุ่ม 16 คน เพื่อเอาชีวิตรอดร่วมกันอย่างเป็นระบบ</h4>
+            <p style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1e293b', lineHeight: '1.5' }}>
+              เหตุการณ์: ไฟไหม้รุนแรงที่ห้องวิเคราะห์เคมีชั้น 4 ควันดำพิษจากพลาสติกและสารเคมีลอยสะสมอัดแน่นในโถงทางเดินหลักเนื่องจากพัดลมระบายอากาศขัดข้อง มีนักเรียนชั้น 5-8 ติดค้างอยู่ด้านบนจำนวนมากท่ามกลางความตื่นตระหนก
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', marginTop: '0.3rem' }}>
-            <div style={{ background: '#eff6ff', border: '1.5px solid #3b82f6', borderRadius: '10px', padding: '0.6rem' }}>
-              <h5 style={{ fontWeight: 900, color: '#1e40af', fontSize: '0.9rem', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Shield size={14} /> 1. ทีมแพทย์กู้ภัย (4 คน)</h5>
-              <p style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', lineHeight: '1.4' }}>จัดเตรียมการปฐมพยาบาล แจกหน้ากากผ้าชุบน้ำ ช่วยประคองและดูแลเพื่อนที่ตกใจกลัวอย่างใกล้ชิด</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginTop: '0.2rem' }}>
+            <div style={{ background: '#eff6ff', border: '1.5px solid #3b82f6', borderRadius: '12px', padding: '0.6rem' }}>
+              <h5 style={{ fontWeight: 900, color: '#1e40af', fontSize: '0.85rem', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Shield size={13} /> 1. ทีมกู้ชีพและการแพทย์ฉุกเฉิน (4 คน)</h5>
+              <p style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', lineHeight: '1.4' }}>จัดตั้งจุดคัดกรองปฐมพยาบาลเบื้องต้น รวบรวมผ้าสะอาดชุบน้ำทำหน้ากากกรองควัน คอยประคองผู้บาดเจ็บ และทำหน้าที่ควบคุมสติ (Anti-Panic) ป้องกันการเหยียบกัน</p>
             </div>
-            <div style={{ background: '#f0fdf4', border: '1.5px solid #22c55e', borderRadius: '10px', padding: '0.6rem' }}>
-              <h5 style={{ fontWeight: 900, color: '#166534', fontSize: '0.9rem', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Map size={14} /> 2. ทีมสำรวจทางหนี (4 คน)</h5>
-              <p style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', lineHeight: '1.4' }}>สำรวจความปลอดภัยประตูก่อนเปิด เคลียร์ทางออกบันไดหนีไฟฝั่งตะวันออกที่ควันยังพัดเข้าไปไม่ถึง</p>
+            <div style={{ background: '#f0fdf4', border: '1.5px solid #22c55e', borderRadius: '12px', padding: '0.6rem' }}>
+              <h5 style={{ fontWeight: 900, color: '#166534', fontSize: '0.85rem', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Map size={13} /> 2. ทีมสำรวจและประเมินเส้นทางหนี (4 คน)</h5>
+              <p style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', lineHeight: '1.4' }}>ตรวจสอบความปลอดภัยประตูก่อนเปิด (สัมผัสหลังมือ) ค้นหาบันไดหนีไฟฝั่งตะวันออกที่เป็นเขตปลอดควัน และนำทางกลุ่มโดยจัดระเบียบให้หมอบคลานต่ำหลบก๊าซพิษ</p>
             </div>
-            <div style={{ background: '#fdf2f8', border: '1.5px solid #ec4899', borderRadius: '10px', padding: '0.6rem' }}>
-              <h5 style={{ fontWeight: 900, color: '#9d174d', fontSize: '0.9rem', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Wrench size={14} /> 3. ทีมนวัตกรรม (4 คน)</h5>
-              <p style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', lineHeight: '1.4' }}>ประดิษฐ์หน้ากากคาร์บอนฉุกเฉิน หรือประกอบโครงสะท้อนแสงเพื่อทำป้ายระบุชี้เป้าพิกัดความช่วยเหลือ</p>
+            <div style={{ background: '#fdf2f8', border: '1.5px solid #ec4899', borderRadius: '12px', padding: '0.6rem' }}>
+              <h5 style={{ fontWeight: 900, color: '#9d174d', fontSize: '0.85rem', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Wrench size={13} /> 3. ทีมนวัตกรรมสร้างสิ่งประดิษฐ์ (4 คน)</h5>
+              <p style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', lineHeight: '1.4' }}>ประดิษฐ์หน้ากากกรองคาร์บอนชั่วคราวจากผงถ่านและผ้า รวบรวมอุปกรณ์มาทำสัญญาณไฟแฟลชหรือใช้กระจกสะท้อนหน้าต่างเพื่อแจ้งพิกัดแก่กู้ภัยด้านนอกอาคาร</p>
             </div>
-            <div style={{ background: '#fffbeb', border: '1.5px solid #f59e0b', borderRadius: '10px', padding: '0.6rem' }}>
-              <h5 style={{ fontWeight: 900, color: '#9a3412', fontSize: '0.9rem', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><MessageSquare size={14} /> 4. ทีมควบคุมความสงบ (4 คน)</h5>
-              <p style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', lineHeight: '1.4' }}>คุมแถวคนให้ก้มต่ำเดินเรียงเดี่ยวห้ามแตกตื่น จัดคิวลงบันได และโทรศัพท์ประสานอัปเดตแจ้งตำแหน่งกู้ภัย</p>
+            <div style={{ background: '#fffbeb', border: '1.5px solid #f59e0b', borderRadius: '12px', padding: '0.6rem' }}>
+              <h5 style={{ fontWeight: 900, color: '#9a3412', fontSize: '0.85rem', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><MessageSquare size={13} /> 4. ทีมควบคุมระเบียบและการสื่อสาร (4 คน)</h5>
+              <p style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', lineHeight: '1.4' }}>โทรประสานสายด่วนกู้ภัย 199 เพื่อแจ้งพิกัดและจำนวนยอดคน จัดระเบียบแถวเรียงเดี่ยวห้ามแซงกัน และทำการนับยอดคน (Roll Call) ทุกครั้งที่ผ่านอุปสรรค</p>
             </div>
           </div>
         </div>
