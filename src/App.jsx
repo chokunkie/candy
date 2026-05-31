@@ -30,7 +30,7 @@ function App() {
         <Route path="/feedback" element={<div className="container"><Feedback /></div>} />
         <Route path="/crisis-slides" element={<div className="container container-large"><CrisisSlides /></div>} />
         <Route path="/crisis-info" element={<div className="container"><CrisisInfo /></div>} />
-        <Route path="/teachings-slides" element={<div className="container container-large"><TeachingsSlides /></div>} />
+        <Route path="/teachings-slides" element={<TeachingsSlides />} />
       </Routes>
     </BrowserRouter>
   );
