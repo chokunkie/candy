@@ -27,12 +27,12 @@ const lockMapping = {
 };
 
 const housesOrder = [
+  "บ้านมาการอง อุอิ",
+  "บ้านsugar",
   "บ้านลอดช่อง",
   "บ้านครองแครงกะทิสด",
   "บ้านท้ายบ้าบิ่น",
   "บ้านโรตีท้ายบังบ่าว",
-  "บ้านมาการอง อุอิ",
-  "บ้านsugar",
   "ครองแครงปิ๊นาศ",
   "บ้านครองแครง",
   "บ้านบัวลอยไข่หวาน",
@@ -97,24 +97,14 @@ export default function ScholarshipDraw() {
     // 3. Determine the SECRET winner based on lock rules
     let winner = "";
     
-    // Absolute first draw override: Lock to กนกลักษณ์ เพชรอาวุธ
-    if (!hasFirstDrawHappened) {
-      const firstTarget = "กนกลักษณ์ เพชรอาวุธ";
-      const targetObj = participants.find(p => p.name === firstTarget);
-      if (targetObj) {
-        winner = firstTarget;
-      }
-      setHasFirstDrawHappened(true);
-    } else {
-      // Standard flow logic: Look up locks
-      const lockConfig = lockMapping[currentHouse];
-      if (lockConfig) {
-        const locks = lockConfig.lockedNames;
-        // Find which locked name hasn't been drawn yet
-        const remainingLocks = locks.filter(name => !alreadyDrawn.includes(name));
-        if (remainingLocks.length > 0) {
-          winner = remainingLocks[0];
-        }
+    // Standard flow logic: Look up locks
+    const lockConfig = lockMapping[currentHouse];
+    if (lockConfig) {
+      const locks = lockConfig.lockedNames;
+      // Find which locked name hasn't been drawn yet
+      const remainingLocks = locks.filter(name => !alreadyDrawn.includes(name));
+      if (remainingLocks.length > 0) {
+        winner = remainingLocks[0];
       }
     }
 
@@ -183,22 +173,11 @@ export default function ScholarshipDraw() {
 
         // Move cursor state forward after short delay
         setTimeout(() => {
-          // If we overrode the first draw, keep the slot state aligned!
-          // We drew กนกลักษณ์ (บ้านมาการอง) as first draw.
-          // Since she belongs to บ้านมาการอง อุอิ, we should record her there.
-          // For the current house (บ้านลอดช่อง), we haven't actually drawn anyone yet.
-          // So let's NOT advance the currentHouseIdx/currentSlotIdx for บ้านลอดช่อง if the winner wasn't actually in บ้านลอดช่อง!
-          if (targetHouse === currentHouse) {
-            if (currentSlotIdx === 0) {
-              setCurrentSlotIdx(1);
-            } else {
-              setCurrentSlotIdx(0);
-              setCurrentHouseIdx(prev => prev + 1);
-            }
+          if (currentSlotIdx === 0) {
+            setCurrentSlotIdx(1);
           } else {
-            // It was กนกลักษณ์ (มาการอง อุอิ) drawn during ลอดช่อง turn.
-            // We just recorded her to มาการอง. The ลอดช่อง turn remains unchanged so we can draw ลอดช่อง properly now!
-            // We don't advance indices.
+            setCurrentSlotIdx(0);
+            setCurrentHouseIdx(prev => prev + 1);
           }
         }, 3200);
       }
