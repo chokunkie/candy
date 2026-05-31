@@ -26,22 +26,11 @@ const lockMapping = {
   }
 };
 
-const housesOrder = [
-  "บ้านมาการอง อุอิ",
-  "บ้านsugar",
-  "บ้านลอดช่อง",
-  "บ้านครองแครงกะทิสด",
-  "บ้านท้ายบ้าบิ่น",
-  "บ้านโรตีท้ายบังบ่าว",
-  "ครองแครงปิ๊นาศ",
-  "บ้านครองแครง",
-  "บ้านบัวลอยไข่หวาน",
-  "บ้านขนมเปียกปูน"
-];
-
 export default function ScholarshipDraw() {
   const navigate = useNavigate();
   const [participants, setParticipants] = useState([]);
+  const [housesOrder, setHousesOrder] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   // Draw State Machine
   const [currentHouseIdx, setCurrentHouseIdx] = useState(0); // Index in housesOrder
@@ -59,7 +48,13 @@ export default function ScholarshipDraw() {
   const [disqualifiedNames, setDisqualifiedNames] = useState([]);
 
   useEffect(() => {
-    fetchParticipants();
+    const init = async () => {
+      setLoading(true);
+      await fetchParticipants();
+      await fetchHousesSortedByPoints();
+      setLoading(false);
+    };
+    init();
   }, []);
 
   const fetchParticipants = async () => {
@@ -73,6 +68,39 @@ export default function ScholarshipDraw() {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const fetchHousesSortedByPoints = async () => {
+    try {
+      // Fetch teams sorted by points DESC (อันดับ 1 ไป 10)
+      const { data, error } = await supabase
+        .from('teams')
+        .select('name, points')
+        .order('points', { ascending: false });
+      
+      if (error) throw error;
+      if (data) {
+        // Reverse to get "อันดับ 10 ขึ้นมาหาอันดับ 1" (อันดับสุดท้ายขึ้นก่อน)
+        const sortedNames = data.map(t => t.name).reverse();
+        setHousesOrder(sortedNames);
+      }
+    } catch (err) {
+      console.error("Error fetching teams order:", err);
+      // Fallback in case of database issue
+      const fallback = [
+        "บ้านมาการอง อุอิ",
+        "บ้านsugar",
+        "บ้านลอดช่อง",
+        "บ้านครองแครงกะทิสด",
+        "บ้านท้ายบ้าบิ่น",
+        "บ้านโรตีท้ายบังบ่าว",
+        "ครองแครงปิ๊นาศ",
+        "บ้านครองแครง",
+        "บ้านบัวลอยไข่หวาน",
+        "บ้านขนมเปียกปูน"
+      ];
+      setHousesOrder(fallback);
     }
   };
 
@@ -188,11 +216,10 @@ export default function ScholarshipDraw() {
 
   // Reject / Disqualify Winner (e.g. not present) and redraw
   const handleRejectWinner = () => {
-    if (window.confirm(`น้อง ${justDrawnName} ไม่สิทธิ์อยู่รับรางวัล? ต้องการสุ่มคนใหม่สำหรับบ้านนี้แทนใช่หรือไม่? (จะไม่สุ่มชื่อนี้ซ้ำอีก)`)) {
+    if (window.confirm(`น้อง ${justDrawnName} ไม่มีสิทธิ์อยู่รับรางวัล? ต้องการสุ่มคนใหม่สำหรับบ้านนี้แทนใช่หรือไม่? (จะไม่สุ่มชื่อนี้ซ้ำอีก)`)) {
       setDisqualifiedNames(prev => [...prev, justDrawnName]);
       setShowCelebration(false);
       setRaffleName("--- รอดำเนินการสุ่มใหม่ ---");
-      // Keep indices currentSlotIdx and currentHouseIdx unchanged, allowing a clean re-draw!
     }
   };
 
@@ -208,6 +235,14 @@ export default function ScholarshipDraw() {
       setJustDrawnHouse("");
     }
   };
+
+  if (loading || housesOrder.length === 0) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#0f172a', color: '#64748b' }}>
+        <p style={{ fontWeight: 700 }}>กำลังจัดเรียงลำดับบ้านตามคะแนน (อันดับ 10 ถึง 1)...</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -520,7 +555,7 @@ export default function ScholarshipDraw() {
             gap: '0.5rem',
             color: '#d9a014'
           }}>
-            <Flame size={18} /> ผลการจับรางวัลแยกรายบ้าน (1 ➡️ 10)
+            <Flame size={18} /> ผลการจับรางวัลแยกรายบ้าน (อันดับ 10 ถึง 1 ตามคะแนน)
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
@@ -547,7 +582,7 @@ export default function ScholarshipDraw() {
                     marginBottom: '0.4rem'
                   }}>
                     <span style={{ fontSize: '0.85rem', fontWeight: 800, color: isActive ? '#d9a014' : '#94a3b8' }}>
-                      บ้านลำดับที่ {index + 1}: {houseName}
+                      อันดับที่ {10 - index}: {houseName}
                     </span>
                     {draws.length === 2 && (
                       <span style={{ background: '#10b981', color: '#000', fontSize: '0.65rem', fontWeight: 900, padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
