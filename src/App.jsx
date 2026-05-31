@@ -11,6 +11,7 @@ import RankTCAS from './pages/RankTCAS';
 import Feedback from './pages/Feedback';
 import CrisisSlides from './pages/CrisisSlides';
 import CrisisInfo from './pages/CrisisInfo';
+import TeachingsSlides from './pages/TeachingsSlides';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/feedback" element={<div className="container"><Feedback /></div>} />
         <Route path="/crisis-slides" element={<div className="container container-large"><CrisisSlides /></div>} />
         <Route path="/crisis-info" element={<div className="container"><CrisisInfo /></div>} />
+        <Route path="/teachings-slides" element={<div className="container container-large"><TeachingsSlides /></div>} />
       </Routes>
     </BrowserRouter>
   );

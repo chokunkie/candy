@@ -621,6 +621,18 @@ export default function MasterAdmin() {
             <AlertTriangle size={13} /> สไลด์กิจกรรมวิกฤต
           </button>
           <button
+            onClick={() => navigate('/teachings-slides')}
+            style={{
+              background: '#d9a014', color: '#000',
+              border: '1.5px solid #000', padding: '0.3rem 0.7rem', borderRadius: '8px',
+              fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '0.3rem',
+              boxShadow: '2px 2px 0px #000', transition: 'all 0.1s'
+            }}
+          >
+            <BookOpen size={13} /> สไลด์คำสอน
+          </button>
+          <button
             onClick={() => setShowFeedbackQR(true)}
             style={{
               background: '#ff2e93', color: '#fff',
