@@ -171,19 +171,39 @@ export default function TeachingsSlides() {
           justifyContent: 'center',
           textAlign: 'center',
           flexGrow: 1,
-          animation: 'fadeIn 0.5s ease-out'
+          animation: 'fadeIn 0.5s ease-out',
+          width: '100%',
+          overflow: 'hidden'
         }}>
-          <p style={{
-            fontSize: '2.3rem',
-            fontWeight: 800,
-            lineHeight: '1.6',
-            color: '#1e293b',
-            margin: '2rem 0',
-            wordBreak: 'keep-all',
-            textShadow: '0.5px 0.5px 0px rgba(0,0,0,0.1)'
-          }}>
-            {teachings[currentIdx]}
-          </p>
+          {(() => {
+            const text = teachings[currentIdx];
+            // If the text is longer, dynamically reduce the font size to keep it on a single line
+            let fontSize = '2.3rem';
+            if (text.length > 40) {
+              fontSize = '1.5rem';
+            } else if (text.length > 30) {
+              fontSize = '1.8rem';
+            } else if (text.length > 20) {
+              fontSize = '2.1rem';
+            }
+
+            return (
+              <p style={{
+                fontSize: fontSize,
+                fontWeight: 800,
+                lineHeight: '1.6',
+                color: '#1e293b',
+                margin: '2rem 0',
+                textShadow: '0.5px 0.5px 0px rgba(0,0,0,0.1)',
+                whiteSpace: 'nowrap',
+                width: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}>
+                {text}
+              </p>
+            );
+          })()}
         </div>
 
         {/* Progress Footer indicator */}
