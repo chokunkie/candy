@@ -54,6 +54,7 @@ export default function ScholarshipDraw() {
   const [raffleName, setRaffleName] = useState("--- สุ่มผู้รับทุน ---");
   const [showCelebration, setShowCelebration] = useState(false);
   const [justDrawnName, setJustDrawnName] = useState("");
+  const [justDrawnHouse, setJustDrawnHouse] = useState("");
   
   // Trigger absolute first draw override
   const [hasFirstDrawHappened, setHasFirstDrawHappened] = useState(false);
@@ -143,12 +144,14 @@ export default function ScholarshipDraw() {
         // Final winner lands
         setRaffleName(winner);
         setJustDrawnName(winner);
-        setIsDrawing(false);
-        setShowCelebration(true);
-
+        
         // Record results in local state (Correctly map to the actual team of the participant to prevent house mismatch!)
         const actualParticipant = participants.find(p => p.name === winner);
         const targetHouse = actualParticipant && actualParticipant.team ? actualParticipant.team : currentHouse;
+        setJustDrawnHouse(targetHouse);
+        
+        setIsDrawing(false);
+        setShowCelebration(true);
 
         setDrawnResults(prev => {
           const houseDrawn = prev[targetHouse] || [];
@@ -209,6 +212,8 @@ export default function ScholarshipDraw() {
       setDrawnResults({});
       setRaffleName("--- สุ่มผู้รับทุน ---");
       setShowCelebration(false);
+      setJustDrawnName("");
+      setJustDrawnHouse("");
       setHasFirstDrawHappened(false);
     }
   };
@@ -437,7 +442,7 @@ export default function ScholarshipDraw() {
                     fontWeight: 700,
                     color: '#d9a014'
                   }}>
-                    บ้าน: {currentHouse}
+                    บ้าน: {justDrawnHouse}
                   </div>
                 </div>
               )}
