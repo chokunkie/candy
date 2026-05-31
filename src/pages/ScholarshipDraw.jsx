@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import confetti from 'canvas-confetti';
-import { ArrowLeft, Gift, Play, RotateCcw, Award, CheckCircle, Flame, Sparkles } from 'lucide-react';
+import { ArrowLeft, Gift, Play, RotateCcw, Award, CheckCircle, Flame, Sparkles, X, Check } from 'lucide-react';
 
 // Hardcoded locked list config
 const lockMapping = {
@@ -16,7 +16,7 @@ const lockMapping = {
     lockedNames: ["มณิสรา ฟุ้งเฟื้อง"]
   },
   "บ้านขนมเปียกปูน": {
-    lockedNames: ["อดิศร เอื้อมพล"]
+    lockedNames: ["อดิศร เอื้อมพล", "ณัฐธิดา อัคคีสุวรรณ"]
   },
   "บ้านโรตีท้ายบังบ่าว": {
     lockedNames: ["กานต์ธิดา หนูสมแก้ว", "ศุภณัฐ จันทร์ทองแก้ว"]
@@ -42,22 +42,21 @@ const housesOrder = [
 export default function ScholarshipDraw() {
   const navigate = useNavigate();
   const [participants, setParticipants] = useState([]);
-  const [houses, setHouses] = useState([]);
   
   // Draw State Machine
   const [currentHouseIdx, setCurrentHouseIdx] = useState(0); // Index in housesOrder
   const [currentSlotIdx, setCurrentSlotIdx] = useState(0); // 0 or 1 for the 2 slots per house
   const [drawnResults, setDrawnResults] = useState({}); // { [houseName]: [name1, name2] }
   
-  // Animation / Raffle states
+  // Raffle / Draw states
   const [isDrawing, setIsDrawing] = useState(false);
   const [raffleName, setRaffleName] = useState("--- สุ่มผู้รับทุน ---");
   const [showCelebration, setShowCelebration] = useState(false);
   const [justDrawnName, setJustDrawnName] = useState("");
   const [justDrawnHouse, setJustDrawnHouse] = useState("");
   
-  // Trigger absolute first draw override
-  const [hasFirstDrawHappened, setHasFirstDrawHappened] = useState(false);
+  // Disqualified / Skipped names list to avoid re-drawing them
+  const [disqualifiedNames, setDisqualifiedNames] = useState([]);
 
   useEffect(() => {
     fetchParticipants();
@@ -85,32 +84,31 @@ export default function ScholarshipDraw() {
     setIsDrawing(true);
     setShowCelebration(false);
     
-    // Sounds or Vibration effect if any (using Web Audio API or simply browser vibration for premium style)
     if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
 
     // 1. Get eligible participants for the current house
     const houseMembers = participants.filter(p => p.team === currentHouse);
     
-    // 2. Identify already drawn names globally to prevent duplicate draws
+    // 2. Identify already drawn + disqualified names to prevent duplicate draws
     const alreadyDrawn = Object.values(drawnResults).flat();
+    const excludedNames = [...alreadyDrawn, ...disqualifiedNames];
 
     // 3. Determine the SECRET winner based on lock rules
     let winner = "";
     
-    // Standard flow logic: Look up locks
     const lockConfig = lockMapping[currentHouse];
     if (lockConfig) {
       const locks = lockConfig.lockedNames;
-      // Find which locked name hasn't been drawn yet
-      const remainingLocks = locks.filter(name => !alreadyDrawn.includes(name));
+      // Find which locked name hasn't been drawn + isn't disqualified
+      const remainingLocks = locks.filter(name => !excludedNames.includes(name));
       if (remainingLocks.length > 0) {
         winner = remainingLocks[0];
       }
     }
 
-    // Backup if no lock target matches: Select a random member of this house who hasn't been drawn
+    // Backup if no lock target matches: Select a random member of this house who is eligible
     if (!winner) {
-      const eligibleMembers = houseMembers.filter(m => !alreadyDrawn.includes(m.name));
+      const eligibleMembers = houseMembers.filter(m => !excludedNames.includes(m.name));
       if (eligibleMembers.length > 0) {
         const rand = eligibleMembers[Math.floor(Math.random() * eligibleMembers.length)];
         winner = rand.name;
@@ -120,7 +118,7 @@ export default function ScholarshipDraw() {
       }
     }
 
-    // 4. Run Slot raffle animation (natural-looking scroll)
+    // 4. Run Slot raffle animation
     let counter = 0;
     const interval = setInterval(() => {
       // Pick randomly from ALL participants to create the "everyone in camp is being drawn" effect
@@ -135,22 +133,12 @@ export default function ScholarshipDraw() {
         setRaffleName(winner);
         setJustDrawnName(winner);
         
-        // Record results in local state (Correctly map to the actual team of the participant to prevent house mismatch!)
         const actualParticipant = participants.find(p => p.name === winner);
         const targetHouse = actualParticipant && actualParticipant.team ? actualParticipant.team : currentHouse;
         setJustDrawnHouse(targetHouse);
         
         setIsDrawing(false);
         setShowCelebration(true);
-
-        setDrawnResults(prev => {
-          const houseDrawn = prev[targetHouse] || [];
-          const updatedDrawn = [...houseDrawn, winner];
-          return {
-            ...prev,
-            [targetHouse]: updatedDrawn
-          };
-        });
 
         // Burst Premium Confetti!
         const duration = 2.5 * 1000;
@@ -170,18 +158,42 @@ export default function ScholarshipDraw() {
           confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
           confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
         }, 250);
-
-        // Move cursor state forward after short delay
-        setTimeout(() => {
-          if (currentSlotIdx === 0) {
-            setCurrentSlotIdx(1);
-          } else {
-            setCurrentSlotIdx(0);
-            setCurrentHouseIdx(prev => prev + 1);
-          }
-        }, 3200);
       }
     }, 80);
+  };
+
+  // Confirm and Accept Winner
+  const handleConfirmWinner = () => {
+    // Record results in local state
+    setDrawnResults(prev => {
+      const houseDrawn = prev[justDrawnHouse] || [];
+      const updatedDrawn = [...houseDrawn, justDrawnName];
+      return {
+        ...prev,
+        [justDrawnHouse]: updatedDrawn
+      };
+    });
+
+    setShowCelebration(false);
+    setRaffleName("--- สุ่มผู้รับทุน ---");
+
+    // Move cursor state forward to next slot/house
+    if (currentSlotIdx === 0) {
+      setCurrentSlotIdx(1);
+    } else {
+      setCurrentSlotIdx(0);
+      setCurrentHouseIdx(prev => prev + 1);
+    }
+  };
+
+  // Reject / Disqualify Winner (e.g. not present) and redraw
+  const handleRejectWinner = () => {
+    if (window.confirm(`น้อง ${justDrawnName} ไม่สิทธิ์อยู่รับรางวัล? ต้องการสุ่มคนใหม่สำหรับบ้านนี้แทนใช่หรือไม่? (จะไม่สุ่มชื่อนี้ซ้ำอีก)`)) {
+      setDisqualifiedNames(prev => [...prev, justDrawnName]);
+      setShowCelebration(false);
+      setRaffleName("--- รอดำเนินการสุ่มใหม่ ---");
+      // Keep indices currentSlotIdx and currentHouseIdx unchanged, allowing a clean re-draw!
+    }
   };
 
   const handleReset = () => {
@@ -189,11 +201,11 @@ export default function ScholarshipDraw() {
       setCurrentHouseIdx(0);
       setCurrentSlotIdx(0);
       setDrawnResults({});
+      setDisqualifiedNames([]);
       setRaffleName("--- สุ่มผู้รับทุน ---");
       setShowCelebration(false);
       setJustDrawnName("");
       setJustDrawnHouse("");
-      setHasFirstDrawHappened(false);
     }
   };
 
@@ -388,7 +400,7 @@ export default function ScholarshipDraw() {
                 )}
               </button>
 
-              {/* Winner overlay celebration card */}
+              {/* Winner overlay celebration card with confirmation */}
               {showCelebration && (
                 <div style={{
                   position: 'absolute',
@@ -396,7 +408,7 @@ export default function ScholarshipDraw() {
                   left: '5%',
                   right: '5%',
                   bottom: '5%',
-                  background: 'rgba(9, 13, 22, 0.95)',
+                  background: 'rgba(9, 13, 22, 0.96)',
                   border: '3px solid #d9a014',
                   borderRadius: '20px',
                   display: 'flex',
@@ -407,9 +419,9 @@ export default function ScholarshipDraw() {
                   zIndex: 20,
                   animation: 'celebrateIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'
                 }}>
-                  <Award size={64} color="#d9a014" style={{ marginBottom: '1rem', animation: 'bounce 1s infinite' }} />
+                  <Award size={64} color="#d9a014" style={{ marginBottom: '0.8rem', animation: 'bounce 1s infinite' }} />
                   <h3 style={{ fontSize: '1.3rem', color: '#94a3b8', margin: '0 0 0.5rem' }}>ยินดีด้วยกับผู้รับทุนการศึกษา!</h3>
-                  <h2 style={{ fontSize: '3rem', fontWeight: 900, color: '#fff', margin: '0 0 1rem', textShadow: '0 0 12px #d9a014' }}>
+                  <h2 style={{ fontSize: '3.1rem', fontWeight: 900, color: '#fff', margin: '0 0 0.8rem', textShadow: '0 0 12px #d9a014' }}>
                     {justDrawnName}
                   </h2>
                   <div style={{
@@ -419,9 +431,55 @@ export default function ScholarshipDraw() {
                     borderRadius: '50px',
                     fontSize: '1rem',
                     fontWeight: 700,
-                    color: '#d9a014'
+                    color: '#d9a014',
+                    marginBottom: '2rem'
                   }}>
                     บ้าน: {justDrawnHouse}
+                  </div>
+
+                  {/* Accept / Reject Buttons for active attendance confirmation */}
+                  <div style={{ display: 'flex', gap: '1.5rem' }}>
+                    <button
+                      onClick={handleRejectWinner}
+                      style={{
+                        background: '#ef4444',
+                        color: '#fff',
+                        border: '2.5px solid #000',
+                        borderRadius: '14px',
+                        padding: '0.6rem 2rem',
+                        fontSize: '1rem',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        boxShadow: '4px 4px 0px #000',
+                        transition: 'all 0.1s'
+                      }}
+                    >
+                      <X size={16} /> สุ่มใหม่ (น้องไม่มา)
+                    </button>
+
+                    <button
+                      onClick={handleConfirmWinner}
+                      style={{
+                        background: '#10b981',
+                        color: '#000',
+                        border: '2.5px solid #000',
+                        borderRadius: '14px',
+                        padding: '0.6rem 2.5rem',
+                        fontSize: '1.05rem',
+                        fontWeight: 900,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        boxShadow: '4px 4px 0px #000',
+                        transition: 'all 0.1s'
+                      }}
+                    >
+                      <Check size={16} /> ยืนยันรับทุน
+                    </button>
                   </div>
                 </div>
               )}
@@ -462,7 +520,7 @@ export default function ScholarshipDraw() {
             gap: '0.5rem',
             color: '#d9a014'
           }}>
-            <Flame size={18} /> ผลการจับรางวัลแยกรายบ้าน (10 ➡️ 1)
+            <Flame size={18} /> ผลการจับรางวัลแยกรายบ้าน (1 ➡️ 10)
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
@@ -489,7 +547,7 @@ export default function ScholarshipDraw() {
                     marginBottom: '0.4rem'
                   }}>
                     <span style={{ fontSize: '0.85rem', fontWeight: 800, color: isActive ? '#d9a014' : '#94a3b8' }}>
-                      อันดับที่ {10 - index}: {houseName}
+                      บ้านลำดับที่ {index + 1}: {houseName}
                     </span>
                     {draws.length === 2 && (
                       <span style={{ background: '#10b981', color: '#000', fontSize: '0.65rem', fontWeight: 900, padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
