@@ -146,13 +146,16 @@ export default function ScholarshipDraw() {
         setIsDrawing(false);
         setShowCelebration(true);
 
-        // Record results in local state
+        // Record results in local state (Correctly map to the actual team of the participant to prevent house mismatch!)
+        const actualParticipant = participants.find(p => p.name === winner);
+        const targetHouse = actualParticipant && actualParticipant.team ? actualParticipant.team : currentHouse;
+
         setDrawnResults(prev => {
-          const houseDrawn = prev[currentHouse] || [];
+          const houseDrawn = prev[targetHouse] || [];
           const updatedDrawn = [...houseDrawn, winner];
           return {
             ...prev,
-            [currentHouse]: updatedDrawn
+            [targetHouse]: updatedDrawn
           };
         });
 
@@ -177,11 +180,22 @@ export default function ScholarshipDraw() {
 
         // Move cursor state forward after short delay
         setTimeout(() => {
-          if (currentSlotIdx === 0) {
-            setCurrentSlotIdx(1);
+          // If we overrode the first draw, keep the slot state aligned!
+          // We drew กนกลักษณ์ (บ้านมาการอง) as first draw.
+          // Since she belongs to บ้านมาการอง อุอิ, we should record her there.
+          // For the current house (บ้านลอดช่อง), we haven't actually drawn anyone yet.
+          // So let's NOT advance the currentHouseIdx/currentSlotIdx for บ้านลอดช่อง if the winner wasn't actually in บ้านลอดช่อง!
+          if (targetHouse === currentHouse) {
+            if (currentSlotIdx === 0) {
+              setCurrentSlotIdx(1);
+            } else {
+              setCurrentSlotIdx(0);
+              setCurrentHouseIdx(prev => prev + 1);
+            }
           } else {
-            setCurrentSlotIdx(0);
-            setCurrentHouseIdx(prev => prev + 1);
+            // It was กนกลักษณ์ (มาการอง อุอิ) drawn during ลอดช่อง turn.
+            // We just recorded her to มาการอง. The ลอดช่อง turn remains unchanged so we can draw ลอดช่อง properly now!
+            // We don't advance indices.
           }
         }, 3200);
       }
