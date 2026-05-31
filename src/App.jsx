@@ -12,6 +12,7 @@ import Feedback from './pages/Feedback';
 import CrisisSlides from './pages/CrisisSlides';
 import CrisisInfo from './pages/CrisisInfo';
 import TeachingsSlides from './pages/TeachingsSlides';
+import ScholarshipDraw from './pages/ScholarshipDraw';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/crisis-slides" element={<div className="container container-large"><CrisisSlides /></div>} />
         <Route path="/crisis-info" element={<div className="container"><CrisisInfo /></div>} />
         <Route path="/teachings-slides" element={<TeachingsSlides />} />
+        <Route path="/scholarship-draw" element={<ScholarshipDraw />} />
       </Routes>
     </BrowserRouter>
   );

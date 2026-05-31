@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import confetti from 'canvas-confetti';
-import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen, GraduationCap, Database, Trash2, Heart, MessageSquare, QrCode, X, AlertTriangle } from 'lucide-react';
+import { Eye, EyeOff, Settings, Plus, Minus, MonitorPlay, PartyPopper, Lock, Snowflake, BookOpen, GraduationCap, Database, Trash2, Heart, MessageSquare, QrCode, X, AlertTriangle, Gift } from 'lucide-react';
 
 const majorShortnames = {
   "วิทยาศาสตร์สุขภาพ": "สุขภาพ",
@@ -666,6 +666,19 @@ export default function MasterAdmin() {
             }}
           >
             <PartyPopper size={13} /> ประกาศผลรางวัล
+          </button>
+          
+          <button
+            onClick={() => navigate('/scholarship-draw')}
+            style={{
+              background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', color: '#fff',
+              border: '1.5px solid #000', padding: '0.3rem 0.7rem', borderRadius: '8px',
+              fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '0.3rem',
+              boxShadow: '2px 2px 0px #000', transition: 'all 0.1s'
+            }}
+          >
+            <Gift size={13} fill="#fff" /> สุ่มรับทุนการศึกษา
           </button>
           
           <button
