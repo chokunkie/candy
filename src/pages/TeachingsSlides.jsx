@@ -135,9 +135,9 @@ export default function TeachingsSlides() {
 
       {/* Slide Container (Polaroid/Framed Canvas Style) */}
       <div style={{
-        maxWidth: '850px',
         width: '100%',
-        minHeight: '420px',
+        flexGrow: 1,
+        minHeight: '65vh',
         background: '#fcfbf7', // Premium high-quality canvas color
         color: '#1c1917',
         borderRadius: '24px',
@@ -146,21 +146,22 @@ export default function TeachingsSlides() {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        padding: '3.5rem 4rem',
+        padding: '2.5rem 3rem',
         boxSizing: 'border-box',
         position: 'relative',
-        transform: 'rotate(-0.5deg)',
-        transition: 'all 0.3s ease'
+        transform: 'rotate(-0.2deg)',
+        transition: 'all 0.3s ease',
+        marginTop: '4.5rem'
       }}>
         {/* Artistic Corner Accents */}
         <div style={{
           position: 'absolute',
-          top: '20px',
-          left: '20px',
+          top: '25px',
+          left: '25px',
           color: '#d9a014',
           opacity: 0.8
         }}>
-          <Quote size={32} />
+          <Quote size={40} />
         </div>
 
         {/* Teaching Content Slide */}
@@ -173,32 +174,34 @@ export default function TeachingsSlides() {
           flexGrow: 1,
           animation: 'fadeIn 0.5s ease-out',
           width: '100%',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          padding: '0 2rem'
         }}>
           {(() => {
             const text = teachings[currentIdx];
-            // If the text is longer, dynamically reduce the font size to keep it on a single line
-            let fontSize = '2.3rem';
+            // Fully optimized scale for true fullscreen viewing
+            let fontSize = '4.2rem';
             if (text.length > 40) {
-              fontSize = '1.5rem';
+              fontSize = '2.5rem';
             } else if (text.length > 30) {
-              fontSize = '1.8rem';
+              fontSize = '3.0rem';
             } else if (text.length > 20) {
-              fontSize = '2.1rem';
+              fontSize = '3.6rem';
             }
 
             return (
               <p style={{
                 fontSize: fontSize,
-                fontWeight: 800,
-                lineHeight: '1.6',
+                fontWeight: 900,
+                lineHeight: '1.4',
                 color: '#1e293b',
-                margin: '2rem 0',
+                margin: '1.5rem 0',
                 textShadow: '0.5px 0.5px 0px rgba(0,0,0,0.1)',
                 whiteSpace: 'nowrap',
                 width: '100%',
                 overflow: 'hidden',
-                textOverflow: 'ellipsis'
+                textOverflow: 'ellipsis',
+                letterSpacing: '-1px'
               }}>
                 {text}
               </p>
@@ -212,19 +215,18 @@ export default function TeachingsSlides() {
           justifyContent: 'space-between',
           alignItems: 'center',
           borderTop: '2px dashed #e2e8f0',
-          paddingTop: '1.5rem',
-          marginTop: '1.5rem',
+          paddingTop: '1.2rem',
           fontFamily: "'Kanit', sans-serif"
         }}>
-          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b' }}>
+          <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#64748b', letterSpacing: '1px' }}>
             CANDY CAMP TEACHING
           </span>
           <span style={{
             background: '#1e293b',
             color: '#fff',
-            padding: '0.2rem 0.8rem',
-            borderRadius: '10px',
-            fontSize: '0.8rem',
+            padding: '0.3rem 1.2rem',
+            borderRadius: '12px',
+            fontSize: '0.95rem',
             fontWeight: 800
           }}>
             {currentIdx + 1} / {teachings.length}
